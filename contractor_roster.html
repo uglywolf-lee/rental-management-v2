@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>계약자 인적 데이터 명부 (엑셀 통합형)</title>
+    <style>
+        :root { --primary: #6f42c1; --border: #dee2e6; --bg: #f8f9fa; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; overflow: hidden; background: var(--bg); }
+        .left-panel { width: 35%; background: white; border-right: 1px solid var(--border); padding: 25px; overflow-y: auto; box-sizing: border-box; }
+        .right-panel { width: 65%; padding: 20px; display: flex; flex-direction: column; box-sizing: border-box; background: white; }
+        .panel-title { font-size: 1.1rem; color: var(--primary); margin: 0 0 20px 0; border-bottom: 2px solid var(--primary); padding-bottom: 8px; font-weight: bold; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; color: #495057; }
+        .form-control { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.88rem; box-sizing: border-box; }
+        .btn-box { margin-top: 15px; display: flex; gap: 8px; }
+        .btn { flex: 1; padding: 10px; border: none; border-radius: 4px; font-size: 0.85rem; font-weight: bold; cursor: pointer; text-align: center; }
+        .btn-main { background: var(--primary); color: white; }
+        .btn-sub { background: #6c757d; color: white; }
+        .excel-table-wrap { flex: 1; overflow: auto; border: 1px solid #bbc4cc; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+        th { background: #f1f3f5; border: 1px solid #bbc4cc; padding: 6px 8px; font-weight: 600; position: sticky; top: 0; text-align: left; }
+        td { border: 1px solid #ced4da; padding: 6px 8px; white-space: nowrap; }
+        tr:nth-child(even) { background-color: #f8f9fa; color: #333; }
+    </style>
+</head>
+<body>
+    <div class="left-panel">
+        <div class="panel-title">👥 C. 인적 데이터 및 B2B 파트너 등록</div>
+        <form onsubmit="event.preventDefault();">
+            <div class="form-group">
+                <label>관계 식별자 (contacts.category)</label>
+                <select class="form-control">
+                    <option value="tenant">tenant (실임차인·소유주)</option>
+                    <option value="broker">broker (B2B 중개업자)</option>
+                    <option value="partner">partner (유지보수 협력사)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>상호명 또는 성명 (contacts.company_or_name)</label>
+                <input type="text" class="form-control" placeholder="상호 혹은 개인 이름 입력" required>
+            </div>
+            <div class="form-group">
+                <label>대표자 / 담당자 실명 (contacts.representative_name)</label>
+                <input type="text" class="form-control" placeholder="계약 조항 대조용 실명">
+            </div>
+            <div class="form-group">
+                <label>연락처 번호 (contacts.contact_info)</label>
+                <input type="text" class="form-control" placeholder="010-1234-5678 (14자리 포맷 고정)" required>
+            </div>
+            <div class="form-group">
+                <label>이메일 주소 (contacts.email)</label>
+                <input type="email" class="form-control" placeholder="lowercase 고정">
+            </div>
+            <div class="form-group">
+                <label>증빙 문서 JSON (documents_json)</label>
+                <input type="text" class="form-control" placeholder="뒷자리 마스킹 처리 필수 정보">
+            </div>
+            <div class="btn-box">
+                <button type="submit" class="btn btn-main">파트너 신규 등록</button>
+                <button type="button" class="btn btn-sub">정보 변경 이력수정</button>
+            </div>
+        </form>
+    </div>
+    <div class="right-panel">
+        <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px;">
+            <input type="text" class="form-control" placeholder="이름, 대표자명, 연체/해지 여부 키워드로 시트 검색...">
+            <button class="btn btn-main" style="flex:none; width:80px;">명부 조회</button>
+        </div>
+        <div class="excel-table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>id (PK)</th><th>category</th><th>company_or_name</th><th>representative_name</th><th>contact_info</th><th>email</th><th>상태 필터</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>99</td><td>tenant</td><td>(주)네트웍스 파트너스</td><td>홍길동</td><td>010-1234-5678</td><td>networks@domain.com</td><td>진행중</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
