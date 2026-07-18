@@ -28,27 +28,28 @@
         <div class="panel-title">⚡ D. 공과금 수납 및 청구 등록</div>
         <form onsubmit="event.preventDefault();">
             <div class="form-group">
-                <label>청구 대상 호실 ID (bills.room_id)</label>
+                <label>청구 대상 호실고유번호</label>
                 <input type="number" class="form-control" required>
             </div>
             <div class="form-group">
-                <label>고지 임차인 ID (bills.contact_id)</label>
+                <label>고지 대상 임차인 고유번호</label>
                 <input type="number" class="form-control" placeholder="미지정시 현재 입주자 자동선정">
             </div>
             <div class="form-group">
-                <label>공과금 유형 (bills.bill_type)</label>
+                <label>공과금 유형 (전기/수도/난방/관리비/통신)</label>
                 <select class="form-control">
                     <option>전기요금</option><option>수도요금</option><option>난방비</option><option>관리비</option><option>통신비</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>고지 청구금액 원단위 (bills.amount)</label>
-                <input type="number" class="form-control" placeholder="정수 정산 금액 입력" required>
+                <label>고지 청구금액 (원)</label>
+                <input type="number" class="form-control" placeholder="정수 금액 입력" required>
             </div>
             <div class="form-group">
-                <label>납부기한 약정일 (due_date)</label>
+                <label>납부기한</label>
                 <input type="date" class="form-control" required>
             </div>
+    
             <div class="btn-box">
                 <button type="submit" class="btn btn-main">공과금 고지 등록</button>
                 <button type="button" class="btn btn-sub">납부확인 / 금액수정</button>
@@ -64,7 +65,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>id (PK)</th><th>room_id</th><th>contact_id</th><th>bill_type</th><th>amount (원단위)</th><th>due_date (요일)</th><th>is_paid (수납상태)</th>
+                        <th>No.</th><th>호실고유번호</th><th>임차인고유번호</th><th>공과금종류</th><th>청구금액(원)</th><th>납부기한(요일)</th><th>수납상태</th>
                     </tr>
                 </thead>
                 <tbody>

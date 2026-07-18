@@ -28,31 +28,27 @@
         <div class="panel-title">👥 C. 인적 데이터 및 B2B 파트너 등록</div>
         <form onsubmit="event.preventDefault();">
             <div class="form-group">
-                <label>관계 식별자 (contacts.category)</label>
+                <label>관계 구분 (임차인·중개사·협력사)</label>
                 <select class="form-control">
-                    <option value="tenant">tenant (실임차인·소유주)</option>
-                    <option value="broker">broker (B2B 중개업자)</option>
-                    <option value="partner">partner (유지보수 협력사)</option>
+                    <option value="tenant">실세임차인/소유주</option>
+                    <option value="broker">B2B중개업자</option>
+                    <option value="partner">유지보수 협력사</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>상호명 또는 성명 (contacts.company_or_name)</label>
+                <label>상호명 또는 성명</label>
                 <input type="text" class="form-control" placeholder="상호 혹은 개인 이름 입력" required>
             </div>
             <div class="form-group">
-                <label>대표자 / 담당자 실명 (contacts.representative_name)</label>
+                <label>대표자 / 담당자 실명</label>
                 <input type="text" class="form-control" placeholder="계약 조항 대조용 실명">
             </div>
             <div class="form-group">
-                <label>연락처 번호 (contacts.contact_info)</label>
-                <input type="text" class="form-control" placeholder="010-1234-5678 (14자리 포맷 고정)" required>
+                <label>연락처 번호 (고정형식)</label>
+                <input type="text" class="form-control" placeholder="010-XXXX-5678" required>
             </div>
             <div class="form-group">
-                <label>이메일 주소 (contacts.email)</label>
-                <input type="email" class="form-control" placeholder="lowercase 고정">
-            </div>
-            <div class="form-group">
-                <label>증빙 문서 JSON (documents_json)</label>
+                <label>증빙 문서 경로</label>
                 <input type="text" class="form-control" placeholder="뒷자리 마스킹 처리 필수 정보">
             </div>
             <div class="btn-box">
@@ -70,7 +66,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th>id (PK)</th><th>category</th><th>company_or_name</th><th>representative_name</th><th>contact_info</th><th>email</th><th>상태 필터</th>
+                        <th>No.</th><th>구분</th><th>상호/성명</th><th>대표자</th><th>연락처</th><th>이메일</th><th>상태</th>
                     </tr>
                 </thead>
                 <tbody>
