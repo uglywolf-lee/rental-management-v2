@@ -12,8 +12,8 @@
 | **시간/날짜 (DB저장)** | `YYYY-MM-DD HH:MM:SS` (32400초 오프셋 기준) | DB에는 UTC를 KST(+9h)로 정확히 변환하여 저장해야 합니다. |
 | **부동산 시간 표시 규칙** | `'YYYY-MM-DD (요일)'`(Date only + Day of week) | 부동산 관련 데이터(Rooms, Buildings 등 물리적 정보 중심)는 데이터상에서는 시간이 있지만 화면에 출력될 때는 시간(HH:MM:SS)은 완전히 배제하고 오직 **일자와 요일만** 보여줘야 합니다. ('2024-01-30 (화)') |
 | **전화번호** | `NN-NNNN-NNNN` (하이픈 포함 14자리) | 반드시 고정: `'010-1234-5678'`. 모바일/유선 상관없이 숫자와 하이픈만 사용합니다. 공백( )과 괄호는 허용하지 않습니다. |
-| **이메일** | `lowercase_text@domain.tld` (소문자 고정) | |
-| **금액 (저장)** | BigInt (숫자, 원단위) | DB에는 소수점 없이 정수로 저장. |
+| **이메일** | `lowercase_text@domain.tld` (소문자 고정) | 소문자로 강제 변환 저장해야 합니다. |
+| **금액 (저장)** | BigInt (숫자, 원단위) | DB에는 소수점 없이 정수로 저장. (예: 5000000) |
 | **금액 (화면표시)** | 변환형 Varchar | 공과금 외는 천/만원 단위 표시(예: 50000 → '5만원'), 공과금은 원단위로 고정. |
 
 ---
@@ -137,3 +137,23 @@
 | `target_id` | Integer | 선택 | 변경된 실제 데이터의 로우 ID. |
 | `detail_log_json` | JSON / Text | 필수 | 변경 내용 (예: '{ "monthly_rent": {"old": 500, "new": 600} }') |
 | `created_at`, `updated_at` | Datetime (KST) | 자동 | KST 기준 타임스탬프 (`YYYY-MM-DD HH:MM:SS`형식 준수). |
+
+---
+
+## 9. system_snapshots (데이터 복원을 위한 백업 및 변경 로그 테이블)
+*실수가 발생했을 시 모든 데이터를 즉시 복구(rollback)하기 위한 핵심 작업 테이블입니다.*
+
+| 필드명 | 타입 | 필수/선택 | 설명 |
+|---|---|---|---|
+| `id` | Integer (PK) | 필수 | 고유 키값 |
+| `snapshot_type` | Varchar(50) | 필수 | 백업 종류 ('full_backup', 'contract_undo', 'auto_snapshot' 등 자동저장) |
+| `target_table_name` | Varchar(50) | 필수 | 대상 테이블명 (예: 'contracts', 'rooms') |
+| `target_id` | Integer | 필수 | 변경되거나 백업된 데이터의 로우 ID. 이 데이터가 현재 상태임을 추적합니다. |
+| `data_snapshot_json` | JSON / Text | 필수 | **중요**: 변경 전이나 수정 시 원본 데이터를 통으로 저장합니다. (실수 발생 시 이 JSON을 다시 DB에 INSERT/UPDATE하여 1초 만에원상복구 가능) |
+| `requested_by_id` | Integer (FK→users.id) | 필수 | 백업을 요청한 실제 관리자 ID (누가 언제 백업했는지 파악). |
+| `is_restored` | Boolean | 선택 | 0: 미회복, 1: 복구완료. 해당 스냅샷이 이미 사용되었는지 확인합니다. |
+
+### 📌 데이터 복원(ROLLBACK) 및 백업 규칙 (운영 필수)
+
+> **규칙**: 시스템에 로그인한 모든 권한(user)은 `contracts`, `rooms`, `bills` 같은 핵심 데이터를 수정하기 전, 반드시 `system_snapshots`(이전 상태 JSON 저장) 테이블에 자동 스냅샷을 등록해야 합니다. 
+실수로 잘못된 돈을 입력하거나 임차인 정보를 지울 경우, 해당 스크립션의 `id`와 `data_snapshot_json` 값을 찾아 삽입 혹은 업데이트를 실행하면 데이터가 즉시 원래대로 돌아갑니다. 모든 데이터 삭제(delete)는 무조건 `system_snapshots`에 기록한 뒤, 비활성화(`is_active = 0`)만 수행해야 합니다.
