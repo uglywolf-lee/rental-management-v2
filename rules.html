@@ -73,7 +73,32 @@
     <div class="rule-card hl-warning"><span class="rule-num">22</span><b>audit_logs.detail_log_json:</b> 변경전후값 기록 ('{ "target_id": 45, "old_value": 500000, "new_value": 600000 }')</div>
     <div class="rule-card hl-critical"><span class="rule-num">23</span><b>핵심 데이터(contacts/bills/contracts) 수정전 ALWAYS 롤백-스냅샷 → is_restored=1 마킹 필수</b></div>
 
-    <!-- ═══ 필드 정의 매핑 (Rules ↔ FIELDS.md 완전일치) ═══ -->
+    <!-- ═══ 🏗️ 페이지 제작·빌드·Rebuild 규칙 (24~32) ═══ -->
+    <h2>🏗️ Pages 빌드·Rebuild 규칙 (모든 페이지는 여기서 처음부터 복원 가능)</h2>
+    
+    <!-- 설계도: rebuild_rules.md 기준 매핑 → /docs/pages/ · /docs/db/ · /assets/styles/ · /src/api/ -->  
+    <div class="rule-card hl-info"><span class="rule-num">24</span><b>모든 페이지는 독립된 단일 HTML + CSS + JS 파일로 작성하며 재패키징 시 /public/pages/ 에 배치됨. (예: /public/pages/interface-a.html) — DB 연동은 별도 REST API (/api/v1/)로 관리.</b></div>
+    
+    <div class="rule-card"><span class="rule-num">25</span><b>디자인 토큰 통일 규칙:</b> 전역 CSS 변수 --primary (인터페이스별 고정색), --border, --bg 만 사용. 색상/폰트/패딩은 이 세 가지만 직접사용하고 개별style inline 금지.</div>
+    <div class="rule-card"><span class="rule-num">26</span><b>DB 필드명(contacts.*, bills.* 등) 화면에 노출 절대 불가! 모든 label/placeholder/th/td는 우리말/우리글로 치환. (규칙 14번의 KST+시간포맷과 병렬적용)</b></div>
+    <div class="rule-card"><span class="rule-num">27</span><b>페이지별 파일 구조: {page}.html (본체), {page}-styles.css(스타일), {page}-api.js(API연동), {page}-data.json(초기모의데이터). 패키징 시 이 4종为一组.</b></div>
+    <div class="rule-card"><span class="rule-num">28</span><b>Rebuild(재생성)규칙: 만약 DB/페이지가 모두 날라가도 다음 가이드라인대로 순서대로 실행하면 처음부터 완전 복원됨. (단계를 먼저 DB→rules.html → Pages 빌드순서)</b></div>
+    
+    <h3>📦 패키지 빌드 구조 (/package-rebuild/)</h3>
+    <div class="db-table-wrap" style="font-family:'Courier New',monospace!important; background:#f4f6f8"><pre>/package-rebuild/
+├── 01-db-scripts/          # 스키마·데이터 생성 SQL 파일들 (schema.sql, data_rooms.sql …)
+├── 02-rules-engine/        # rules.html + FIELDS.md — DB 구조 기준서 (모든 개발 이걸로 판정됨.)
+├── 03-api-endpoints/       # REST API 엔드포인트 정의 (/api/v1/buildings, contracts …)
+├── 04-ui-pages/            # {page}.html + 스타일 + 로직 ({interface-a}, {contract_master} …)
+└── BUILD-INSTRUCTIONS.md   # 빌드명령어 (docker-compose up, npm run build, python manage.py migrate 순서)</pre></div>
+
+    <h3>🔄 Rebuild 절차 (데이터/페이지 완전 유실 시)</h3>
+    <div class="rule-card hl-success"><span class="rule-num">29</span><b>Step1 — DB 재생성:</b> /01-db-scripts/schema.sql 실행 → 테이블 생성 후 contacts, users 등 초기테이블 seed 데이터 INSERT.</div>
+    <div class="rule-card hl-info"><span class="rule-num">30</span><b>규칙 적용:</b> /02-rules-engine/rules.html 기준서 검증 (필드명 매칭 실패시 즉시 수정). DB생성순서: buildings → rooms → contacts → contracts → bills → incidents → users·audit_logs.</div>
+    <div class="rule-card"><span class="rule-num">31</span><b>Step2 — 페이지 빌드(/04-ui-pages/):</b></div>
+    <div style="margin-left:36px; margin-bottom:8px;">① {interface-a}.html 빌드 → 부동산 인프라 등록 (buildings+rooms) → REST API /api/v1/buildings 연동.</div>
+    <div class="rule-card"><span class="rule-num">32</span><b>② {contract_master}→{monthly_rent_collection} 순서로 인터페이스별 HTML→API연동→테스트 → 전체 통합검증.</b></div>
+
     <h2>📊 핵심 테이블 구조 명세 (rules.html = FIELDS.md — 완전 일치)</h2>
     
     <div class="db-table-wrap"><h3>① buildings · 부동산 정보</h3>
