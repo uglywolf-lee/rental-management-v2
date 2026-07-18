@@ -28,17 +28,17 @@
         
         <form onsubmit="event.preventDefault();">
             <div class="form-group">
-                <label>연동 계약 마스터 ID (contracts.id)</label>
+                <label>연동 계약 고유번호</label>
                 <input type="number" class="form-control" placeholder="상단 테이블 행 선택 시 자동 바인딩" required>
             </div>
             <div class="row-grid">
                 <div class="form-group">
-                    <label>실제 수납 일자 (bills.due_date 기준 정산)</label>
+                    <label>실제 수납 일자</label>
                     <input type="date" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label>입금 금액 원단위 정수 (amount)</label>
-                    <input type="number" class="form-control" placeholder="예: 3500000" required>
+                    <label>입금 금액 (원)</label>
+                    <input type="number" class="form-control" placeholder="예: 350만원" required>
                 </div>
             </div>
             <div class="form-group">
