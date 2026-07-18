@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>전사 데이터 통합 조회 대시보드 (G, H, I 통합본)</title>
+    <style>
+        :root { --primary: #6610f2; --teal: #20c997; --amber: #ffc107; --border: #dee2e6; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 20px; background: #f8f9fa; }
+        .board-header { background: linear-gradient(135deg, var(--primary), #4e0cb2); color: white; padding: 20px; border-radius: 6px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .board-header h1 { margin: 0; font-size: 1.3rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
+        .card { background: white; border-radius: 6px; border: 1px solid var(--border); padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .card h2 { margin-top: 0; font-size: 1rem; padding-bottom: 8px; border-bottom: 2px solid #333; display: flex; justify-content: space-between; }
+        .metric-box { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed var(--border); font-size: 0.88rem; }
+        .metric-box:last-child { border-bottom: none; }
+        .val { font-weight: bold; color: #212529; }
+    </style>
+</head>
+<body>
+
+    <div class="board-header">
+        <h1>🏢 대시보드 마스터 게이트웨이 (종합 조회 모듈)</h1>
+        <p style="margin:5px 0 0 0; font-size:0.85rem; opacity:0.8;">권한 계정: super_admin / office_worker 감사로그 연동 시스템</p>
+    </div>
+
+    <!-- 3대 모듈 결합 단일 그리드 레이아웃 -->
+    <div class="grid-3">
+
+        <!-- G. 통합 월세 관리 모듈 -->
+        <div class="card" style="border-top: 4px solid var(--teal);">
+            <h2 style="color: var(--teal);">📊 G. 통합 월세 관리 현황판</h2>
+            <div class="metric-box"><span>부동산별 당월 총수입</span><span class="val">1억 4,500만원</span></div>
+            <div class="metric-box"><span>전사 미납금 목록 건수</span><span class="val" style="color:red;">14건</span></div>
+            <div class="metric-box"><span>연체 일수 임계치 초과</span><span class="val" style="color:red;">3명</span></div>
+            <div class="metric-box"><span>당월 보증금 반환 정산액</span><span class="val">8,000만원</span></div>
+        </div>
+
+        <!-- H. 통합 계약 관리 모듈 -->
+        <div class="card" style="border-top: 4px solid var(--amber);">
+            <h2 style="color: #b58900;">📅 H. 통합 계약 스케줄러</h2>
+            <div class="metric-box"><span>30일 이내 만기 도래</span><span class="val" style="color:orange;">5건</span></div>
+            <div class="metric-box"><span>묵시적 갱신 완료 계약</span><span class="val">12건</span></div>
+            <div class="metric-box"><span>중도 해지 요청 및 분쟁</span><span class="val" style="color:red;">1건</span></div>
+            <div class="metric-box"><span>계약자-자산 연결 유효성</span><span class="val" style="color:green;">정상 (100%)</span></div>
+        </div>
+
+        <!-- I. 직원용 종합 대시보드 (최상위) -->
+        <div class="card" style="border-top: 4px solid var(--primary); background: linear-gradient(180deg, white 80%, #fff3cd 100%);">
+            <h2 style="color: var(--primary);">👑 I. 관리자 전사 종합 요약</h2>
+            <div class="metric-box"><span>운영 자산 총 수량</span><span class="val">Buildings: 4개 / Rooms: 180호</span></div>
+            <div class="metric-box"><span>당월 종합 미납 수납액</span><span class="val" style="color:red;">2,450,600원</span></div>
+            <div class="metric-box"><span>실시간 미해결 INCIDENTS</span><span class="val" style="color:red;">2건 접수중</span></div>
+            <div class="metric-box"><span>보안 등급 차단 차수 (audit)</span><span class="val">정상 작동중</span></div>
+        </div>
+
+    </div>
+
+</body>
+</html>
