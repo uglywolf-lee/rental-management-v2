@@ -19,19 +19,24 @@
         .excel-table-wrap { flex: 1; overflow: auto; border: 1px solid #bbc4cc; margin-top: 15px; }
         table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
         th { background: #f1f3f5; border: 1px solid #bbc4cc; padding: 6px 8px; font-weight: 600; position: sticky; top: 0; text-align: left; }
-        td { border: 1px solid #ced4da; padding: 6px 8px; white-space: nowrap; }
-        tr:nth-child(even) { background-color: #f8f9fa; color: #333; }
+        td { border: 1px solid #ced4da; padding: 6px 8px; white-space: nowrap; color: #333; }
+        tr:nth-child(even) { background-color: #f8f9fa; }
     </style>
 </head>
 <body>
     <div class="left-panel">
-        <div class="panel-title">👥 C. 인적 데이터 및 B2B 파트너 등록</div>
+        <div class="panel-title">👥 C. 인적 데이터 및 B2B파트너 등록</div>
         <form onsubmit="event.preventDefault();">
+            <!-- 형님 지시로 추가한 핵심 대조 필드 -->
+            <div class="alert-info" style="background:#f3e9ff;color:#5a2d8a;padding:8px 12px;border-radius:4px;margin-bottom:15px;font-size:.78rem">
+💡 사업자등록번호(또는주민번호앞자리)는 계약대조용핵심식별키 — 반드시필수입력
+            </div>
+
             <div class="form-group">
                 <label>관계 구분 (임차인·중개사·협력사)</label>
                 <select class="form-control">
                     <option value="tenant">실세임차인/소유주</option>
-                    <option value="broker">B2B중개업자</option>
+                    <option value="broker">B2B중개업체</option>
                     <option value="partner">유지보수 협력사</option>
                 </select>
             </div>
@@ -39,17 +44,26 @@
                 <label>상호명 또는 성명</label>
                 <input type="text" class="form-control" placeholder="상호 혹은 개인 이름 입력" required>
             </div>
+            <!-- 핵심 대조 필드 -->
+            <div class="form-group">
+                <label>사업자등록번호 (또는 주민번호 앞자리 6자리)</label>
+                <input type="text" class="form-control" placeholder="예: 123-45-67890 (하이픈 포함)" required>
+            </div>
             <div class="form-group">
                 <label>대표자 / 담당자 실명</label>
-                <input type="text" class="form-control" placeholder="계약 조항 대조용 실명">
+                <input type="text" class="form-control" placeholder="계약 조항 대조용 실명 입력">
             </div>
             <div class="form-group">
                 <label>연락처 번호 (고정형식)</label>
                 <input type="text" class="form-control" placeholder="010-XXXX-5678" required>
             </div>
             <div class="form-group">
-                <label>증빙 문서 경로</label>
-                <input type="text" class="form-control" placeholder="뒷자리 마스킹 처리 필수 정보">
+                <label>이메일 주소</label>
+                <input type="email" class="form-control" placeholder="example@domain.com">
+            </div>
+            <div class="form-group">
+                <label>증빙 문서 파일 첨부</label>
+                <input type="file" class="form-control">
             </div>
             <div class="btn-box">
                 <button type="submit" class="btn btn-main">파트너 신규 등록</button>
@@ -57,25 +71,31 @@
             </div>
         </form>
     </div>
+
+    <!-- 우측 엑셀 시트 패널 -->
     <div class="right-panel">
-        <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px;">
-            <input type="text" class="form-control" placeholder="이름, 대표자명, 연체/해지 여부 키워드로 시트 검색...">
-            <button class="btn btn-main" style="flex:none; width:80px;">명부 조회</button>
+        <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 15px;">
+            <input type="text" class="form-control" placeholder="상호, 사업자번호, 대표자명, 연락처 키워드로 시트 검색...">
+            <button class="btn btn-main" style="flex:none;width:80px;">명부 조회</button>
         </div>
+        
+        <!-- 핵심 대조 필드가 테이블에 포함 (사업자등록번호 등) -->
         <div class="excel-table-wrap">
             <table>
                 <thead>
                     <tr>
-                        <th>No.</th><th>구분</th><th>상호/성명</th><th>대표자</th><th>연락처</th><th>이메일</th><th>상태</th>
+                        <th>번호</th><th>구분</th><th>상호/성명</th><th>사업자등록번호 (식별번호)</th><th>대표자</th><th>연락처</th><th>이메일</th><th>상태</th>
                     </tr>
                 </thead>
-                <tbody>
+
+<tbody>
                     <tr>
-                        <td>99</td><td>tenant</td><td>(주)네트웍스 파트너스</td><td>홍길동</td><td>010-1234-5678</td><td>networks@domain.com</td><td>진행중</td>
+                        <td>99</td><td>tenant</td><td>(주)네트웍스 파트너스</td><td>124-81-00000</td><td>홍길동</td><td>010-1234-5678</td><td>networks@domain.com</td><td>진행중</td>
                     </tr>
                 </tbody>
             </table>
         </div>
+
     </div>
 </body>
 </html>
