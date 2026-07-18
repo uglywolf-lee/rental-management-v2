@@ -271,6 +271,16 @@
       • 모든 테이블은 소문자_스네이크케이스명 · DB삭제절대불가·is_active=0만비활성화(규칙3·8)<br/>
       • system_snapshots rollback: 핵심데이터수정전반드시자동저장 → is_restored=1 마킹(23번규칙)</div>
 
+    <!-- ═══ G/HI 실무 메모 + 규칙 35 매핑 ═══ -->
+    <h2>📝 규칙 35 — G/HI 실무 통합 대시보드 (수납 메모 DB 매핑)</h2>
+    <div class="rule-card hl-success"><span class="rule-num">35</span><b>G/HI 실무통합대시보드:</b><br/>
+      페이지: g_h_i_dashboard.html (HTML/CSS/JS 단일파일)<br/>
+      테이블: memos (FIELDS.md⑩)<br/>
+      필드매핑:<br/>
+      <code>memos.id</code> → UI순번 / <code>memos.room_id(FK→rooms.id)</code> → 호실정보 / <code>memos.contact_id(FK→contacts.id)</code> → 계약상호명<br/>
+      <code>memos.writer_user_id(FK→users.id)</code> → 담당자ID / <code>memos.memo_text(Text필수)</code> → ✍️실제메모텍스트 / <code>memos.created_at(Datetime KST자동)</code> → 기록일시<br/>
+      <b>UI규칙:</b> 각 ROW에 <code>&lt;input class="ledger-memo-input"&gt;</code> — onChange로 POST /api/v1/memos 자동저장. 영문필드명절대UI표시금지.</div>
+
 </div>
 </body>
 </html>
