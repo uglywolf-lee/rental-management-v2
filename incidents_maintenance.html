@@ -34,25 +34,25 @@
         <div class="panel-title">🔧 F. 시설유지보수/파손신고 관리</div>
         <form onsubmit="event.preventDefault();">
             <div class="form-group">
-                <label>이슈 호실 ID (incidents.room_id)</label>
+                <label>이슈 발생 호실 고유번호</label>
                 <input type="number" class="form-control" placeholder="문제가 생긴 호실입력" required>
             </div>
             <div class="form-group">
-                <label>사고 유형 분류 (incidents.category)</label>
+                <label>사고 유형 분류 (선택:파손·점유·일반보수)</label>
                 <select class="form-control">
                     <option>시설파손</option><option>무단점유</option><option>일반유지보수</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>실제 내용 기술 (incidents.description)</label>
+                <label>상세 내용 기술</label>
                 <input type="text" class="form-control" placeholder="2층102호 화장실관파열 등 구체적기재필수">
             </div>
             <div class="form-group">
-                <label>누가 신고했는지 (incidents.reported_by_id)</label>
+                <label>신고 직원 고유번호</label>
                 <input type="number" class="form-control" placeholder="유지보수인원ID매핑" required>
             </div>
             <div class="form-group">
-                <label>추산 수리비 원단위 (incidents.estimated_cost)</label>
+                <label>추산 수리비 (원)</label>
                 <input type="number" class="form-control" placeholder="정산청구액입력(원)">
             </div>
             <div class="btn-box">
@@ -72,12 +72,12 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>id (PK)</th><th>room_id</th><th>category</th><th>reported_by_id</th><th>estimated_cost</th><th>status (처리상태)</th>
+                            <th>No.</th><th>호실고유번호</th><th>사고분류</th><th>내용</th><th>신고자고유번호</th><th>추산수리비(원)</th><th>처리상태</th>
                         </tr>
-                    </thead>
-                    <tbody>
+                        </thead>
+                        <tbody>
                         <tr>
-                            <td>772</td><td>Room-101</td><td>시설파손</td><td>User-58</td><td>3,200,000원</td><td style="color:orange; font-weight:bold;">접수중</td>
+                            <td>772</td><td>Room-101</td><td>시설파손</td><td>관파열 누수</td><td>유지보수Staff3</td><td>3,200,000원</td><td style="color:orange; font-weight:bold;">접수중</td>
                         </tr>
                     </tbody>
                 </table>
