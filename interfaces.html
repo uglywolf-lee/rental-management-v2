@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>부동산 관리 인터페이스 목록</title>
+    <style>
+    body { font-family:'Segoe UI',sans-serif; margin:20px; line-height:1.5; background:#f8f9fa; }
+    .section{background:white; border-radius:6px; padding:15px 20px; margin-bottom:12px; box-shadow:0 1px 3px rgba(0,0,0,0.06); border-left:4px solid #007bff; }
+    h2{margin:0 0 10px 0;font-size:1rem;color:#333}
+    .item { display:flex; gap:15px; padding:8px 0; border-bottom:1px solid #e9ecef; font-size:0.92rem; }
+    .item:last-child { border-bottom:none }
+    .op{background:#e7f5ff;color:#004085;border-radius:3px;padding:2px 8px;font-weight:bold;min-width:24px;text-align:center; }
+    .note{color:#6c757d;font-size:0.82rem;margin-top:4px}
+    </style>
+</head>
+<body>
+
+<h1 style="font-size:1.3rem;color:#007bff;margin-bottom:15px;">📋 부동산 관리 시스템 인터페이스 목록 (구현 우선순위)</h1>
+
+<!-- A. 부동산 -->
+<div class="section" style="border-left-color:#28a745;margin-top:15px">
+<h2>A. 부동산 관리</h2>
+<div class="item"><span class="op">입력</span><span>부동산 등록 주소/층수/호실/유형(상가등)/면적</span></div>
+<div class="item"><span class="op">수정</span><span>현황변경 면적확장 특성변경 (삭제는 없음)</span></div>
+<div class="item"><span class="op">검색</span><span>주소/유형별 현황리스트</span></div>
+</div>
+
+<!-- B. 계약서 -->
+<div class="section" style="border-left-color:#fd7e14">
+<h2>B. 계약서 관리</h2>
+<div class="item"><span class="op">입력</span><span>계약조건 (보증금/임대료/기간/전월세 형태)</span></div>
+<div class="item"><span class="op">수정</span><span>조건변경 (이력관리 + 기존 데이터 비활성화)</span></div>
+<div class="item"><span class="op">검색</span><span>부동산별 계약현황 / 기간별 갱신표</span></div>
+</div>
+
+<!-- C. 계약자 -->
+<div class="section" style="border-left-color:#6f42c1">
+<h2>C. 계약자 관리</h2>
+<div class="item"><span class="op">입력</span><span>성명/연락처/신분증유형+번호/거주지</span></div>
+<div class="item"><span class="op">수정</span><span>개인정보변경 이력 (삭제는 없음)</span></div>
+<div class="item"><span class="op">검색</span><span>계약자리스트 / 계약현황/연체/해지여부</span></div>
+</div>
+
+<!-- D. 공과금 -->
+<div class="section" style="border-left-color:#dc3545">
+<h2>D. 관리공과금 (관리비)</h2>
+<div class="item"><span class="op">입력</span><span>재산세/전기/수도/난방/통신 고지금액/납부기한</span></div>
+<div class="item"><span class="op">수정</span><span>금액변경/납부확인 (이력관리)</span></div>
+<div class="item"><span class="op">검색</span><span>미납현황/물별 청구리스트</span></div>
+</div>
+
+<!-- E. 월세 납부 -->
+<div class="section" style="border-left-color:#17a2b8">
+<h2>E. 월세 납부관리</h2>
+<div class="item"><span class="op">입력</span><span>납부일/금액/정산내역 (보증금 반환등)</span></div>
+<div class="item"><span class="op">수정</span><span>납부이력변경 연체처리 이역 (삭제는 없음)</span></div>
+<div class="item"><span class="op">검색</span><span>월별 납현황/총계 요약 / 미납자리스트</span></div>
+</div>
+
+<!-- F. 유지보수 -->
+<div class="section" style="border-left-color:#e83e8c">
+<h2>F. 시설유지보수 (INCIDENTS)</h2>
+<div class="item"><span class="op">입력</span><span>파손/훼손신고 repair필요사항/비용추산</span></div>
+<div class="item"><span class="op">수정</span><span>처리상태변경 (접수중→완료) / 실제수리비정산</span></div>
+<div class="item"><span class="op">검색</span><span>부동산별유지이력 / 파손별비용추계</span></div>
+</div>
+
+<!-- G. 통합 월세관리 -->
+<div class="section" style="border-left-color:#20c997">
+<h2>G. 통합 월세 관리 인터페이스</h2>
+<div class="item"><span class="op">전체</span><span>부동산별/계약자별 월세총수입/미납목록/연체일수 통합현황판</span></div>
+<span class="note">→ 월세+공과금+보증금반환을 한눈에</span>
+</div>
+
+<!-- H. 통합 계약관리 -->
+<div class="section" style="border-left-color:#ffc107">
+<h2>H. 통합 계약 관리 인터페이스</h2>
+<div class="item"><span class="op">전체</span><span>모든계약의만기/갱신/해지현황 / 다음행위추적표</span></div>
+<span class="note">→ 계약서+계약자+부동산 연결고리 한눈에</span>
+</div>
+
+<!-- I. 직원용 (전체요약) -->
+<div class="section" style="border-left-color:#6610f2; background: linear-gradient(135deg, white 70%, #fff3cd 100%)">
+<h2 style="color:#6610f2">★ I. 직원용 대시보드 (전체종합)</h2>
+<div class="item"><span class="op">조회</span><span>부동산총수/계약현황/미납월세/예외사건(파손등) 통합현황</span></div>
+<span class="note">→ 모든 데이터를 요약하고 한눈에 확인하는 직원용 메인화면</span>
+</div>
+
+<div style="margin-top:20px;padding:10px;background:#e7f5ff;border-radius:4px;font-size:0.85rem;color:#004085">
+<b>💡 참고:</b> 각 항목(입력/수정)은 별도로 구현됨, 검색은 조회용 별도 페이지<br/>
+인터페이스는 실제 데이터베이스 생성 전에 먼저 설계 (DB는 채워넣어야 완성)
+</div>
+
+</body>
+</html>

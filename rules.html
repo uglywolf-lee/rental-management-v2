@@ -3,201 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>부동산 데이터베이스 규칙</title>
+    <title>부동산 데이터베이스 규칙 + 인터페이스</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            font-family: sans-serif; 
-            background-color: #f4f6f8; 
-            color: #333; 
-            padding: 20px; 
-            line-height: 1.5; 
-        }
-        .container { max-width: 900px; margin: 0 auto; }
-        h1 { font-size: 1.3rem; margin-bottom: 10px; color: #007bff; }
-        
-        /* 규칙 항목 */
-        .rule-item { 
-            background: white; 
-            border-left: 4px solid #007bff; 
-            padding: 12px 16px; 
-            margin-bottom: 8px; 
-            border-radius: 0 6px 6px 0; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-        }
-        .rule-number { 
-            display: inline-block; 
-            background: #007bff; 
-            color: white; 
-            font-weight: bold; 
-            min-width: 24px; 
-            height: 24px; 
-            text-align: center; 
-            line-height: 24px; 
-            border-radius: 50%; 
-            margin-right: 8px; 
-        }
-        .rule-text { color: #333; font-size: 0.92rem; }
-        
-        /* 스크린샷/이미지가 있다면 */
-        img.screenshot { 
-            width: 100%; 
-            border-radius: 6px; 
-            margin-top: 15px; 
-            box-shadow: 0 1px 4px rgba(0,0,0,0.08); 
-        }
+    body{font-family:'Segoe UI',sans-serif;margin:20px;line-height:1.5;background:#f8f9fa}
+    .section{background:white;border-radius:6px;padding:12px 16px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,0.05);border-left:4px solid #007bff;font-size:0.9rem}
+    h1{font-size:1.2rem;color:#007bff;margin-bottom:10px}
+    h2{font-size:1rem;color:#333;margin:8px 0 4px}
+    .rule-num{display:inline-block;background:#007bff;color:white;width:22px;height:22px;border-radius:50%;text-align:center;line-height:22px;font-weight:bold;font-size:0.8rem;margin-right:6px}
+    .table-wrap{margin-top:10px;padding:10px;background:#f4f6f8;border-radius:4px;overflow-x:auto}
+    table{border-collapse:collapse;font-size:0.82rem;width:auto}
+    th,td{border:1px solid #dee2e6;padding:5px 8px;text-align:left;white-space:nowrap}
+    th{background:#e9ecef}
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>부동산 DB 규칙 (규칙 페이지)</h1>
 
-    <div class="rule-item">
-        <span class="rule-number">1</span>
-        <span class="rule-text">주소 기반의 데이터베이스</span>
-    </div>
+<h1>부동산 관리 DB 규칙 + 인터페이스 + 사용자권한</h1>
 
-    <div class="rule-item" style="border-left-color: #28a745; background: #f0fff4;">
-        <span class="rule-number" style="background: #28a745;">2</span>
-        <span class="rule-text"><b>핵심키는 별도 고유 ID — 주소는 속성일 뿐 (같은 주소라도 층수/호실 다르면独立된 데이터)</b></span>
-    </div>
+<h2 class="section">📜 핵심 DB 규칙 (1~13)</h2>
+<div class="section"><span class="rule-num">1</span>주소 기반 데이터베이스<br/>
+<div class="section"><span class="rule-num">2</span><b>핵심키는 별도 고유 ID — 주소는 속성일 뿐</b> (같은 주소라도 층수/호실 다르면 독립된 데이터)<br/>
+<div class="section"><span class="rule-num">3</span>증가는 가능, 삭제는 불가능<br/>
+<div class="section"><span class="rule-num">4</span>부동산 특성에 따라 테이블값 형식 특정<br/>
+<div class="section"><span class="rule-num">5</span>데이터베이스 수정 가능<br/>
+<div class="section"><span class="rule-num">6</span><b>동일 주소 + 동일 층수/호실 조합에서만 중복 불가</b><br/>
+<div class="section"><span class="rule-num">7</span>DB 직접 조작 시 로그 기록 필수<br/>
+<div class="section"><span class="rule-num">8</span><b>수정 시 신규 INSERT + 기존 비활성화 (DELETE 금지)</b></span></div>
+<div class="section" style="border-left-color:#e83e8c"><span class="rule-num" style="background:#e83e8c;">14</span><b>KST 한국타임 기준으로 모든 테이블의 timestamps 통일</b><br/>
+<div class="section" style="border-left-color:#6f42c1"><span class="rule-num" style="background:#6f42c1;">15</span><b>DB 간 연결: properties.id = contracts.property_id, contracts.tenant_ids(JSON) ↔ tenants.id 등. 앱 로직에서 자동 조인<br/>
+<div class="section" style="border-left-color:#fd7e14"><span class="rule-num" style="background:#fd7e14;">~중요한 사항들입니다.<br/><br/>실무상 중개사 개입이 많은데 중개료는 계약에 따라 변동사항으로 별도 테이블로 관리해야 함 (rules.txt에는 기본 규칙만)<br/>계약서 입력 시 양측(임대인·임차인) + 중개인 정보 함께 채워야 하고<br/><b>계약서 원본이미지는 상시 visible / 옆쪽에 뜨게 만들어야 해요.</b></span></div>
 
-    <div class="rule-item">
-        <span class="rule-number">3</span>
-        <span class="rule-text">증가는 가능, 삭제는 불가능 (8번 참조)</span>
-    </div>
+<h2 class="section">👥 사용자 권한+감사로그 규칙 (16~19)</h2>
+<div class="section" style="border-left-color:#ffc107"><span class="rule-num" style="background:#ffc107;color:#333">16</span><b>관리자(거의 전권): 모든 데이터 조작권한 (불특정사용자의 접근금지)</b><br/>
+<div class="section" style="border-left-color:#28a745"><span class="rule-num" style="background:#28a745;">17</span><b>사무인원: 검색+입력 권한 (수정불가능, 삭제불가능)</b><br/>
+<div class="section" style="border-left-color:#17a2b8"><span class="rule-num" style="background:#17a2b8;">18</span><b>건물유지보수인원: 시설만 입력 + 조회 (계약서수정불가)</b></div>
+<div class="section" style="border-left-color:#dc354"><span class="rule-num" style="background:#dc354;">19</span><b>누가 어디에 무슨 짓을 했는지 로그파일로 관리 + 감사로그테이블 (db_logs)</b></div>
 
-    <div class="rule-item">
-        <span class="rule-number">4</span>
-        <span class="rule-text">부동산 특성에 따라 테이블값 형식 특정</span>
-    </div>
-
-    <div class="rule-item">
-        <span class="rule-number">5</span>
-        <span class="rule-text">데이터베이스 수정 가능</span>
-    </div>
-
-    <div class="rule-item" style="border-left-color: #dc3545; background: #fff8f8;">
-        <span class="rule-number" style="background: #dc3545;">6</span>
-        <span class="rule-text"><b>동일 주소 + 동일 층수/호실 조합에서만 중복 불가 — 다른 층수/호실은 같은주소라도 독립된 데이터로 허용</b></span>
-    </div>
-
-    <div class="rule-item">
-        <span class="rule-number">7</span>
-        <span class="rule-text">데이터베이스를 직접 만들거나 수정하는 특징이 있으니 로그 기록 필수</span>
-    </div>
-
-    <div class="rule-item" style="border-left-color: #fd7e14; background: #fff8f0;">
-        <span class="rule-number" style="background: #fd7e14;">8</span>
-        <span class="rule-text"><b>수정 시 새 데이터 등록 + 기존 같은 주소+층수/호실 데이터 비활성화 — 삭제는 불가능</b></span>
-    </div>
-
-    <!-- 연동 구조 (규칙) -->
-    <h1 style="margin-top: 20px;">3대 데이터베이스 연동 구조</h1>
-
-    <p style="background:#e8f4fd; padding:10px; border-radius:6px; margin-bottom:15px; font-size:0.9rem;">
-        환경: IndexedDB (온라인/오프라인 무관)<br>
-        3개 DB를 하나의 데이터처럼 다루며, 앱 로직에서 ID로 자동 연결됩니다.<br>
-        CSV 파일 export/import 기능으로 백업·이식 가능.
-    </p>
-
-    <!-- 규칙 번호 추가 -->
-    <div class="rule-item" style="border-left-color:#17a2b8;">
-        <span class="rule-number" style="background:#17a2b8;">9</span>
-        <span class="rule-text">환경: IndexedDB(브라우저 내장), CSV export/import 병행 — 모든 브라우저에서 오프라인 동작</span>
-    </div>
-
-    <div class="rule-item" style="border-left-color:#6f42c1;">
-        <span class="rule-number" style="background:#6f42c1;">10</span>
-        <span class="rule-text">DB 간 연결: 모든 테이블에 `id`(고유키) + `property_id`(외래키) — 앱 로직에서 한 번에 조인</span>
-    </div>
-
-    <!-- 계약자 ID 정보 규칙 -->
-    <h1 style="margin-top:20px;">계약자 식별정보 처리 규칙</h1>
-
-    <div class="rule-item" style="border-left-color:#e83e8c;">
-        <span class="rule-number" style="background:#e83e8c;">11</span>
-        <span class="rule-text"><b>ID 정보: `id_type`(주민등록/여권/사업자 등록) + `id_value`(번호) 별도 컬럼으로 저장 — 키값은 별도 고유 ID이므로 중첩 불가</b></span>
-    </div>
-
-    <div class="rule-item" style="border-left-color:#e83e8c;">
-        <span class="rule-number" style="background:#e83e8c;">12</span>
-        <span class="rule-text"><b>주민등록번호 뒷자리 DB 절대 보관 금지 — 앞 6자리(생년월일)만, 실제 전체 확인시 신분증사본 이미지 파일만 열람</b></span>
-    </div>
-
-    <div class="rule-item" style="border-left-color:#e83e8c;">
-        <span class="rule-number" style="background:#e83e8c;">13</span>
-        <span class="rule-text"><b>신분증 사본은 이미지/PDF 파일로 별도 폴더 저장, DB에는 URL 경로만 참조</b></span>
-    </div>
-
-    <!-- 3대 DB 테이블 구조 -->
-    <h1 style="margin-top:20px;">3대 데이터베이스 테이블 구조</h1>
-
-    <h2 style="font-size:1rem; color:#495057; margin-bottom:8px;">① 계약자 데이터 (tenants)</h2>
-    <table border="1" cellpadding="6" cellspacing="0" style="width:100%; border-collapse:collapse; font-size:0.85rem; margin-bottom:15px;">
-        <tr style="background:#f4f6f8;"><th>필드</th><th>타입</th><th>설명</th></tr>
-        <tr><td>id</td><td>INTEGER PK</td><td>계약자 고유 ID (연결 핵심)</td></tr>
-        <tr><td>name</td><td>TEXT</td><td>성명</td></tr>
-        <tr><td>phone</td><td>TEXT</td><td>연락처</td></tr>
-        <tr><td>address</td><td>TEXT</td><td>거주지 주소</td></tr>
-        <tr><td>id_type</td><td>TEXT</td><td>신분증유형: 주민등록/여권/사업자</td></tr>
-        <tr><td>id_value</td><td>TEXT</td><td>식별번호(주민: 앞6자리만, 여권: 평문)</td></tr>
-        <tr><td>id_doc_url</td><td>TEXT</td><td>신분증 사본 파일 경로 (업로드 경로 기준)</td></tr>
-        <tr><td>type</td><td>TEXT CHECK</td><td>임대인/임차인</td></tr>
-        <tr><td>contract_ids</td><td>TEXT(JSON)</td><td>관련 계약서 ID 목록 (예: [1,3])</td></tr>
-    </table>
-
-    <h2 style="font-size:1rem; color:#495057; margin-bottom:8px;">② 계약서 데이터 (contracts)</h2>
-    <table border="1" cellpadding="6" cellspacing="0" style="width:100%; border-collapse:collapse; font-size:0.85rem; margin-bottom:15px;">
-        <tr style="background:#f4f6f8;"><th>필드</th><th>타입</th><th>설명</th></tr>
-        <tr><td>id</td><td>INTEGER PK</td><td>계약서 고유 ID (연결 핵심)</td></tr>
-        <tr><td>property_id</td><td>INTEGER FK → properties.id</td><td>대상 부동산 매핑</td></tr>
-        <tr><td>tenant_ids</td><td>TEXT(JSON)</td><td>관련契約자 ID 목록 (예: [2,5])</td></tr>
-        <tr><td>start_date</td><td>DATE</td><td>계약 시작일</td></tr>
-        <tr><td>end_date</td><td>DATE</td><td>계약 종료일</td></tr>
-        <tr><td>deposit_won</td><td>BIGINT</td><td>보증금 (원)</td></tr>
-        <tr><td>monthly_rent_won</td><td>BIGINT</td><td>월 임대료 (원)</td></tr>
-        <tr><td>status</td><td>TEXT</td><td>활성/해지/갱신 등</td></tr>
-    </table>
-
-    <h2 style="font-size:1rem; color:#495057; margin-bottom:8px;">③ 관리비 및 청구 데이터 (bills)</h2>
-    <table border="1" cellpadding="6" cellspacing="0" style="width:100%; border-collapse:collapse; font-size:0.85rem; margin-bottom:15px;">
-        <tr style="background:#f4f6f8;"><th>필드</th><th>타입</th><th>설명</th></tr>
-        <tr><td>id</td><td>INTEGER PK</td><td>청구서 고유 ID</td></tr>
-        <tr><td>property_id</td><td>INTEGER FK → properties.id</td><td>대상 부동산</td></tr>
-        <tr><td>contract_id</td><td>INTEGER FK → contracts.id</td><td>관련 계약서 (임대인과 연결)</td></tr>
-        <tr><td>tenant_ids</td><td>TEXT(JSON)</td><td>실제 납부자 계약자 ID</td></tr>
-        <tr><td>bill_type</td><td>TEXT CHECK</td><td>재산세/전기/수도/통신 등</td></tr>
-        <tr><td>amount_won</td><td>BIGINT</td><td>청구 금액 (원)</td></tr>
-        <tr><td>issued_date</td><td>DATE</td><td>고지일</td></tr>
-        <tr><td>due_date</td><td>DATE</td><td>납부기한</td></tr>
-        <tr><td>paid</td><td>INTEGER 0/1</td><td>결제 여부</td></tr>
-    </table>
-
-    <!-- 연결 고리 -->
-    <h1 style="margin-top:20px;">데이터베이스 간 조인 예시</h1>
-    <table border="1" cellpadding="6" cellspacing="0" style="width:100%; border-collapse:collapse; font-size:0.85rem;">
-        <tr style="background:#e8f4fd;"><th>부동산 → 계약자 → 계약서 → 관리비</th><th></th></tr>
-        <tr><td>properties.id = contracts.property_id</td><td>부동산 ↔ 계약서 매핑</td></tr>
-        <tr><td>contracts.contract_ids (JSON) → tenants.id</td><td>계약서 ↔契約자 연결고리</td></tr>
-        <tr><td>bills.tenant_ids (JSON) → tenants.id</td><td>관리비 ← 契約자 (실제 납부자)</td></tr>
-        <tr><td>bills.contract_id → contracts.id</td><td>관리비 ↔ 계약서 직결 연결고리</td></tr>
-    </table>
-
-    <!-- 스키마 구조 미리보기 -->
-    <h1 style="margin-top:20px;">기존 부동산 테이블 (properties)</h1>
-    <table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse:collapse; font-size:0.85rem;">
-        <tr style="background:#f4f6f8;"><th>필드</th><th>타입</th><th>설명</th></tr>
-        <tr><td>id</td><td>INTEGER PK</td><td>고유 키값 (별도)</td></tr>
-        <tr><td>address</td><td>TEXT</td><td>주소 (속성, 중복 허용)</td></tr>
-        <tr><td>floor_num</td><td>INTEGER</td><td>층수 (중복判定용)</td></tr>
-        <tr><td>room_num</td><td>INTEGER</td><td>호실 (중복判定용)</td></tr>
-        <tr><td>property_type</td><td>TEXT CHECK</td><td>상가/오피스텔/아파트/토지</td></tr>
-        <tr><td>area_sqm</td><td>REAL</td><td>면적 (m²)</td></tr>
-        <tr><td>details</td><td>TEXT</td><td>추가 정보</td></tr>
-        <tr><td>version</td><td>INTEGER</td><td>버전 관리</td></tr>
-        <tr><td>is_active</td><td>INTEGER 0/1</td><td>활성/비활성</td></tr>
-    </table>
+<h2 class="section">🖥️ 구현할 인터페이스 목록 (구현우선순위)<br/>
+<div style=border-left: 4px solid #007bff;padding :15x8px;margin-bottom;15px;font-size: 0.9rem<br/>각 항목 입력/수정/검색 모두 별도 구현 필요, 계약서 입력시는 계약자정보도 같이 채워야 하고<br/><b>계약서 원본은 항상 옆에 떠 있도록</b><br/>
+<div class="section"><h2>A. 부동산 관리</span></h2>
+<div class="item">입력 — 부동산 등록 (주소·층수·호실·유형(상가등)면적)<br/>
+<div class="section"><h2>B. 계약서 관리</span></h2>
+<div class="item">입력 — 계약조건 입력, 계약서 원본업로드<br/>
+<div class="item">수정 — 조건변경 (이력관리), 기존 비활성화+신규INSERT</div>
 </div>
+<div class="section"><h2>C. 계약자 관리</span></h2>
+<div class="item">입력 — 성명/연락처/사본증명(주민등록 앞자리만)</div>
+<div class="item">수정 — 개인정보변경 (삭제는 없음), 이력관리<br/><br/>
+<div class=section style="border-left-color:#dc3545"><h2>D. 관리공과금(관리비)</span></h2>
+<div class="item">입력 — 재산세/전기/수도/난방/통신 고지금액/납부기한</div><br/>
+<div class=section style="border-left-color:#17a2b8"><h2>E. 월세 납부 관리</span></h2>
+<div class="item">입력 — 월세납입일·금액(보증금반환도 포함)<br/><br/>
+<div class=section style="border-left-color:#e83e8c"><h2>F. 시설유지보수(INCIDENTS)</span></h2>
+<div class="item">파손신고,repair필요사항/비용추산</div><br/>
+<div class=section style="border-left-color:#20c997"><h2>G. 통합 월세 관리 인터페이스</span></h3>
+<div class="item">부동산별 계약자별 월세총수입·미납목록·연체일수 통합현황판<br/>월세+공과금+보증금반환을 한눈에 확인할 수 있음</div><br/>
+<div class=section style="border-left-color:#ffc107"><h2>H. 통합 계약 관리 인터페이스</span></h3>
+<div class="item">모든계약의만기·갱신·폐지현황 — 다음행위추적표<br/><br/>
+<div class=section style=" border-left-color:#6610f2;background:linear-gradient( 135deg,white 70%,#fff3cd)<h2>I. 직원용 대시보드 (전체종합)</span></h3>
+<div class="item">부동산총수·계약현황·미납월세/예외사건(파손등) 통합현황판<br/>모든 데이터를 요약하고 한눈에 확인하는 직원용 메인화면</div><br/>
+
+<h2 class=section>📋 인터페이스별 세부 항목</span></h3>
+<div class="item"><b>A. 부동산물 입력 — 주소·층수호실·유형·면적 등 등록, 계약서 원본업로드<br/></div>`<br/>
+<div class="item"> <span class="rule-num" style="border-left-color: 4px solid #007bff;padding:15x8px;margin-bottom;15px;font-size: 0.9rem"><br/>각 항목 입/수정/검색 모두 별도 구현 필요, 계약서 입력시는
+계약자정보도 같이 채워야 하고<br/><b>계약수 원본은 항상 옆에 뜨도록</b><br/> </div>
+
+<h2 class="section">🖥️ 구현할 인터페이스 목록 (구현우선순위)</span></h3> /각 항목 입력/수정/검색모두 별도구현 필요, 계약서입력시는
+계약자정보도 같이 채워야 하고<br/><b>계약서 원본은 항상 옆에 떠 있도록</b><br/>
+
+<div class="section" style="border-left-color:#28a745"><h2>A.부동산 관리</span></h3>
+<div class="item">입력 — 부동산 등록 (주소·층수·호실·유형(상가등면적)<br/> <div class="item">수정 — 현황변경, 면적확장 특성변경삭제 없음</div><br/>
+<div class="item">검색 — 주소/유형별현황리스트</div>
+
+<div class="section" style="border-left-color:#fd7e14"><h2>B. 계약서관리</span></h3>
+<div class="item">입력 — 계약조건 입력 (보증금·임대료·기간·전월세형태), 계약서 원본업로드<br/> <div class="item">수정 — 조건변경(이력관리)기존 비활성화+신규INSERT</div><br/>
+<div class="item">검색 — 부동산별 계약리스트 / 기간에 갱신표 198.0, 93.0, 2025-04-15T00:00:00Z<br/><br/>
+
+<div class="section" style="border-left-color:#6f42c1"><h2>C. 계약자관리</span></h3>
+<div class="item">입력 — 성명·연락처·사본증명(주민등록앞자리만) 등록<br/> <div class="item">수정 — 개인정보변경삭제이력, 이력관리)</div><br/>
+<div class="item">검색 — 계약자이력표 / 계약현황/연체여부
+
+<div class=section style="border-left-color:#dc3545"><h2>D.공과금 관리</span></h3>
+<div class="item">입력 — 재산세/수도/난업·통신고지금액·납부기한 등<br/><br/>
+<div class="item">수정 — 금액변경/납부확인(이력관리) / 검색미납현황
+
+<div class=section style="border-left-color:#17a2b8"><h2>E. 월세납입 관리</span></h3>
+<div class="item">입력 — 월세납입일·금액(보증금 반환포함)<br/> <div class="item">수정 — 납부이력변경 연체처리 이역 (삭제< 없음))</div><br/>
+<div class="item">검색 — 월별납현황/총계요약 / 미납자리스트
+
+<div class=section style="border-left-color:#e83e8c"><h2>F.시설유지보수(INCIDENTS)<span></h3>
+<div class=" item">입력 — 파손신고·필요사항/비용추산<br/><br/>
+<div class="item">수정 — 처리상태변경 (접수중→완료)/실수리비정산</div><br/>
+<div class="item">검색 — 부동산별유지이력 / 파손별비용추계 <span>
+
+<div class=section style="border-left-color:#20c997"><h2>G.통합월세 관리 인터페이스</span></h3>
+<div class="item">부동산별 계약자별 월세총수입/미납목록·연체일수<span><br/> → 월세+공과금+보증금반환을 한눈에<br/><br/>
+
+<div class=section style="border-left-color:#ffc107"><h2>H. 통합계약 관리 인터페이스</span></h3>
+<div class="item">모든계약의만기·갱신폐지현황 / 다음행위추적표<br/> → 계약서+계약자+ 부동산연결고리 한눈에 <br/><br/>
+
+<div class=section style="border-left-color:#6610f2;background: linear-gradient( 135deg,white 70%, #fff3cd)<h2>I. 직원용 대시보드 (전체종합)</span></h3>
+<div class="item">부동산총수/계약현황·미납월세/예외사건파손등 통합현황<br/> → 모든 데이터를 요약하고 한눈에 확인하는 직원용 메인화면</div><br/>
+
+<h2 class=" section"><b>💡 참고:</b><br/>각 항목(입력/수정)은 별도로구현됨, 검색은 조회용 별도 페이지<br/> 인터페이스는 <span>실제데이터베이스생성 전에 먼저설계 (DB는 채워넣어야 완성)<b></div>
 </body>
 </html>
