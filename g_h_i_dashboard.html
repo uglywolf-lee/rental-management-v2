@@ -2,57 +2,234 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>전사 데이터 통합 조회 대시보드 (G, H, I 통합본)</title>
+    <title>전사 데이터 통합 조회 대시보드 (G, H, I 실무 통합본)</title>
     <style>
         :root { --primary: #6610f2; --teal: #20c997; --amber: #ffc107; --border: #dee2e6; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 20px; background: #f8f9fa; }
-        .board-header { background: linear-gradient(135deg, var(--primary), #4e0cb2); color: white; padding: 20px; border-radius: 6px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .board-header h1 { margin: 0; font-size: 1.3rem; }
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
-        .card { background: white; border-radius: 6px; border: 1px solid var(--border); padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .card h2 { margin-top: 0; font-size: 1rem; padding-bottom: 8px; border-bottom: 2px solid #333; display: flex; justify-content: space-between; }
-        .metric-box { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed var(--border); font-size: 0.88rem; }
-        .metric-box:last-child { border-bottom: none; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 15px; background: #f8f9fa; height: calc(100vh - 30px); display: flex; flex-direction: column; overflow: hidden; }
+        
+        /* 대시보드 상단 헤더 */
+        .board-header { background: linear-gradient(135deg, var(--primary), #4e0cb2); color: white; padding: 12px 20px; border-radius: 6px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .board-header h1 { margin: 0; font-size: 1.2rem; }
+        
+        /* 위쪽: 변하지 않는 총계 수치 영역 (슬림하게 압축) */
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; min-height: 100px; }
+        .card { background: white; border-radius: 6px; border: 1px solid var(--border); padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: center; }
+        .card h2 { margin: 0 0 6px 0; font-size: 0.88rem; padding-bottom: 4px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
+        .metric-row { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 2px; }
         .val { font-weight: bold; color: #212529; }
+
+        /* 아래쪽: 매일 변하는 실무용 핵심 엑셀 장부 섹션 (대폭 확장) */
+        .realtime-ledger-section { flex: 1; background: white; border-radius: 6px; border: 1px solid var(--border); padding: 15px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .ledger-title { font-size: 1rem; font-weight: bold; color: #111; margin-top: 0; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 2px solid var(--teal); display: flex; justify-content: space-between; align-items: center; }
+        .ledger-badge { background: #fff3cd; color: #856404; font-size: 0.75rem; padding: 3px 8px; border-radius: 4px; font-weight: normal; }
+        
+        /* 엑셀 스타일 테이블 정의 */
+        .excel-table-wrap { flex: 1; overflow: auto; border: 1px solid #bbc4cc; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+        th { background: #f1f3f5; border: 1px solid #bbc4cc; padding: 8px; font-weight: 600; position: sticky; top: 0; text-align: left; color: #212529; z-index: 10; }
+        td { border: 1px solid #ced4da; padding: 6px 8px; white-space: nowrap; color: #333; }
+        tr:nth-child(even) { background-color: #f8f9fa; }
+        tr:hover { background-color: #e8f4fd; cursor: pointer; }
+        
+        /* 납부 상태별 색상 마킹 */
+        .status-wait { color: #b58900; font-weight: bold; background: #fffbeb; padding: 2px 5px; border-radius: 3px; }
+        .status-overdue { color: #dc3545; font-weight: bold; background: #fff5f5; padding: 2px 5px; border-radius: 3px; }
+
+        /* 형님이 지시하신 실시간 수동 입력용 메모창 스타일 */
+        .ledger-memo-input { width: 95%; padding: 4px 6px; border: 1px solid #ced4da; border-radius: 3px; font-size: 0.8rem; font-family: inherit; box-sizing: border-box; background: #fff; color: #000; }
+        .ledger-memo-input:focus { border-color: var(--teal); outline: none; background: #fdfdfd; box-shadow: 0 0 3px rgba(32, 201, 151, 0.3); }
     </style>
 </head>
 <body>
 
+    <!-- 최상단: 시스템 대분류 타이틀 -->
     <div class="board-header">
-        <h1>🏢 대시보드 마스터 게이트웨이 (종합 조회 모듈)</h1>
-        <p style="margin:5px 0 0 0; font-size:0.85rem; opacity:0.8;">권한 계정: super_admin / office_worker 감사로그 연동 시스템</p>
+        <h1>🏢 전사 데이터 통합 대시보드 (메인 게이트웨이)</h1>
     </div>
 
-    <!-- 3대 모듈 결합 단일 그리드 레이아웃 -->
+    <!-- 1. 위쪽: 슬림하게 압축된 3대 관리 지표 (총계용) -->
     <div class="grid-3">
-
-        <!-- G. 통합 월세 관리 모듈 -->
-        <div class="card" style="border-top: 4px solid var(--teal);">
-            <h2 style="color: var(--teal);">📊 G. 통합 월세 관리 현황판</h2>
-            <div class="metric-box"><span>부동산별 당월 총수입</span><span class="val">1억 4,500만원</span></div>
-            <div class="metric-box"><span>전사 미납금 목록 건수</span><span class="val" style="color:red;">14건</span></div>
-            <div class="metric-box"><span>연체 일수 임계치 초과</span><span class="val" style="color:red;">3명</span></div>
-            <div class="metric-box"><span>당월 보증금 반환 정산액</span><span class="val">8,000만원</span></div>
+        <!-- G. 통합 월세 요약 -->
+        <div class="card" style="border-left: 4px solid var(--teal);">
+            <h2 style="color: var(--teal);">📊 G. 월세 수입 요약</h2>
+            <div class="metric-row"><span>당월 목표 총수입</span><span class="val">1억 4,500만원</span></div>
+            <div class="metric-row"><span>보증금 반환 정산액</span><span class="val">8,000만원</span></div>
         </div>
 
-        <!-- H. 통합 계약 관리 모듈 -->
-        <div class="card" style="border-top: 4px solid var(--amber);">
-            <h2 style="color: #b58900;">📅 H. 통합 계약 스케줄러</h2>
-            <div class="metric-box"><span>30일 이내 만기 도래</span><span class="val" style="color:orange;">5건</span></div>
-            <div class="metric-box"><span>묵시적 갱신 완료 계약</span><span class="val">12건</span></div>
-            <div class="metric-box"><span>중도 해지 요청 및 분쟁</span><span class="val" style="color:red;">1건</span></div>
-            <div class="metric-box"><span>계약자-자산 연결 유효성</span><span class="val" style="color:green;">정상 (100%)</span></div>
+        <!-- H. 통합 계약 요약 -->
+        <div class="card" style="border-left: 4px solid var(--amber);">
+            <h2 style="color: #b58900;">📅 H. 만기 스케줄 요약</h2>
+            <div class="metric-row"><span>30일 이내 만기도래</span><span class="val" style="color:orange;">5건</span></div>
+            <div class="metric-row"><span>중도 해지 및 분쟁</span><span class="val" style="color:red;">1건</span></div>
         </div>
 
-        <!-- I. 직원용 종합 대시보드 (최상위) -->
-        <div class="card" style="border-top: 4px solid var(--primary); background: linear-gradient(180deg, white 80%, #fff3cd 100%);">
-            <h2 style="color: var(--primary);">👑 I. 관리자 전사 종합 요약</h2>
-            <div class="metric-box"><span>운영 자산 총 수량</span><span class="val">Buildings: 4개 / Rooms: 180호</span></div>
-            <div class="metric-box"><span>당월 종합 미납 수납액</span><span class="val" style="color:red;">2,450,600원</span></div>
-            <div class="metric-box"><span>실시간 미해결 INCIDENTS</span><span class="val" style="color:red;">2건 접수중</span></div>
-            <div class="metric-box"><span>보안 등급 차단 차수 (audit)</span><span class="val">정상 작동중</span></div>
+        <!-- I. 전사 종합 요약 -->
+        <div class="card" style="border-left: 4px solid var(--primary);">
+            <h2 style="color: var(--primary);">👑 I. 인프라 가동률</h2>
+            <div class="metric-row"><span>전체 운영 자산 수</span><span class="val">4개동 / 180호실</span></div>
+            <div class="metric-row"><span>미해결 시설파손</span><span class="val" style="color:red;">2건 접수중</span></div>
         </div>
+    </div>
 
+    <!-- 2. 아래쪽: 형님의 지시로 구성한 살아있는 핵심 실무 영역 (가장 최근 월세 수납 대상자 TOP 12) -->
+    <div class="realtime-ledger-section">
+        <div class="ledger-title">
+            <span>📅 이번 달 월세 수납 대상자 명부 (곧 입금 예정 및 미납 TOP 12)</span>
+            <span class="ledger-badge">💡 전화를 돌리며 확인된 통화 내용 및 입금 약속 시점을 메모창에 실시간으로 기록하십시오.</span>
+        </div>
+        
+        <div class="excel-table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 40px;">순번</th>
+                        <th style="width: 80px;">호실 정보 (FK→rooms.id)</th>
+                        <th>계약 상호명 / 성명 (FK→contacts.id)</th>
+                        <th>사업자등록번호 (식별번호)</th>
+                        <th>연락처 (하이픈 포함)</th>
+                        <th style="width: 90px;">약정 기준일</th>
+                        <th>월세 금액 (원)</th>
+                        <th style="width: 80px;">현재 수납상태</th>
+                        <!-- 형님 지시로 추가된 실시간 실무 메모장 칼럼 -->
+                        <th style="width: 250px; background: #e6fffa;">✍️ 수납 진행 상황 메모 (담당자 직접 입력)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td><b>A동 201호</b></td>
+                        <td>(주)네트웍스 파트너스</td>
+                        <td>124-81-00000</td>
+                        <td>010-1234-5678</td>
+                        <td>매월 15일</td>
+                        <td><b>3,500,000원</b></td>
+                        <td><span class="status-overdue">⚠️ 4일 연체</span></td>
+                        <td><input type="text" class="ledger-memo-input" value="금일 오후 3시 은행 마감 전까지 무조건 송금하겠다고 담당자 확약함."></td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td><b>A동 202호</b></td>
+                        <td>김법인 주식회사</td>
+                        <td>110-85-12345</td>
+                        <td>010-9876-5432</td>
+                        <td>매월 20일</td>
+                        <td><b>2,800,000원</b></td>
+                        <td><span class="status-wait">입금 대기</span></td>
+                        <td><input type="text" class="ledger-memo-input" placeholder="통화 내용 입력 (예: 내일 입금 예정)"></td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td><b>B동 101호</b></td>
+                        <td>미래테크 상사</td>
+                        <td>220-81-99887</td>
+                        <td>010-5555-6666</td>
+                        <td>매월 20일</td>
+                        <td><b>1,500,000원</b></td>
+                        <td><span class="status-wait">입금 대기</span></td>
+                        <td><input type="text" class="ledger-memo-input" placeholder="통화 내용 입력"></td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td><b>B동 503호</b></td>
+                        <td>홍길동 (개인정산)</td>
+                        <td>780115-1******</td>
+                        <td>010-2222-3333</td>
+                        <td>매월 21일</td>
+                        <td><b>850,000원</b></td>
+                        <td><span class="status-wait">입금 대기</span></td>
+                        <td><input type="text" class="ledger-memo-input" placeholder="통화 내용 입력"></td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td><b>A동 304호</b></td>
+                        <td>(주)글로벌 트레이딩</td>
+                        <td>105-86-44552</td>
+                        <td>010-4444-8888</td>
+                        <td>매월 25일</td>
+                        <td><b>4,200,000원</b></td>
+                        <td><span class="status-wait">입금 대기</span></td>
+                        <td><input type="text" class="ledger-memo-input" placeholder="통화 내용 입력"></td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td><b>C동 102호</b></td>
+                        <td>대박 부동산 중개사무소</td>
+                        <td>123-04-56789</td>
+                        <td>02-1588-0000</td>
+                        <td>매월 25일</td>
+                        <td><b>1,200,000원</b></td>
+                        <td><span class="status-wait">입금 대기</span></td>
+                        <td><input type="text" class="ledger-memo-input" placeholder="통화 내용 입력"></td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td><b>A동 401호</b></td>
+                        <td>이영희 (디자인 스튜디오)</td>
+                        <td>850920-2******</td>
+                        <td>010-7777-1111</td>
+                        <td>매월 25일</td>
+                        <td><b>950,000원</b></td>
+                        <td><span class="status-wait">입금 대기</span></td>
+                        <td><input type="text" class="ledger-memo-input" placeholder="통화 내용 입력"></td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td><b>D동 201호</b></td>
+                        <td>씨앤에이 주식회사</td>
+                        <td>410-85-99001</td>
+                        <td>010-8888-9999</td>
+                        <td>매월 27일</td>
+                        <td><b>5,500,000원</b></td>
+                        <td><span class="status-wait">입금 대기</span></td>
+                        <td><input type="text" class="ledger-memo-input" placeholder="통화 내용 입력"></td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td><b>B동 302호</b></td>
+                        <td>박디지털 (개인전업)</td>
+                        <td>900303-1******</td>
+                        <td>010-9999-0000</td>
+                        <td>매월 28일</td>
+                        <td><b>700,000원</b></td>
+                        <td><span class="status-wait">입금 대기</span></td>
+                        <td><input type="text" class="ledger-memo-input" placeholder="통화 내용 입력"></td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td><b>A동 105호</b></td>
+                        <td>코리아푸드 가맹본부</td>
+                        <td>114-86-55443</td>
+                        <td>010-6666-7777</td>
+                        <td>매월 30일</td>
+                        <td><b>3,100,000원</b></td>
+                        <td><span class="status-wait">입금 대기</span></td>
+                        <td><input type="text" class="ledger-memo-input" placeholder="통화 내용 입력"></td>
+                    </tr>
+                    <tr>
+                        <td>11</td>
+                        <td><b>C동 404호</b></td>
+                        <td>(주)에이아이 로직스</td>
+                        <td>120-82-77665</td>
+                        <td>010-3333-4444</td>
+                        <td>매월 30일</td>
+                        <td><b>2,400,000원</b></td>
+                        <td><span class="status-wait">입금 대기</span></td>
+                        <td><input type="text" class="ledger-memo-input" placeholder="통화 내용 입력"></td>
+                    </tr>
+                    <tr>
+                        <td>12</td>
+                        <td><b>D동 701호</b></td>
+                        <td>유니버설 유통</td>
+                        <td>201-85-33442</td>
+                        <td>010-1111-2222</td>
+                        <td>매월 30일</td>
+                        <td><b>1,800,000원</b></td>
+                        <td><span class="status-wait">입금 대기</span></td>
+                        <td><input type="text" class="ledger-memo-input" placeholder="통화 내용 입력"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
 </body>

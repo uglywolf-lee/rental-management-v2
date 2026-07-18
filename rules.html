@@ -249,6 +249,15 @@
               전체: 모든계약의만기/갱신/해지현황 + 다음행위추적표 — 계약서+계약자+부동산연결고리 한눈에<br/></div>
         </div>
 
+        <div class="iface-card" style="border-left-color:#6419e3">
+            <span class="iface-badge" style="background:#6419e3; color:white;">G</span>
+            <div class="iface-detail"><b>G. 통합 월세 관리 + 실무 메모 인터페이스:</b><br/>
+              전체: 부동산별·계약자별월세총입금+모든공과금( bills.amount )/보증금반환현황판한눈에매핑필드<br/>
+              <b>메모기능:</b> g_h_i_dashboard.html의 ✍️ 수납진행상황 메모창 — DB의 `memos` 테이블에 자동저장됨.<br/>
+              <code>memos.room_id(FK→rooms.id)</code>, <code>memos.contact_id(FK→contacts.id)</code>, <code>memos.writer_user_id(FK→users.id)</code>, <code>memos.memo_text(Text필수)</code>, <code>memos.created_at(Datetime KST 자동)</code><br/>
+              각 ROW에 <code>&lt;input type="text" class="ledger-memo-input"&gt;</code> → onChange로 API POST /api/v1/memos 자동저장</div>
+        </div>
+
         <div class="iface-card" style="border-left-color:#6610f2; background: linear-gradient(135deg, white 70%, #fff3cd);">
             <span class="iface-badge" style="background:#6610f2">I</span>
             <div class="iface-detail"><b>I. 직원용 대시보드 (전체종합):</b><br/>

@@ -138,7 +138,21 @@
 | `detail_log_json` | JSON / Text | 필수 | 변경 내용 (예: '{ "monthly_rent": {"old": 500, "new": 600} }') |
 | `created_at`, `updated_at` | Datetime (KST) | 자동 | KST 기준 타임스탬프 (`YYYY-MM-DD HH:MM:SS`형식 준수). |
 
----
+|---|
+
+## 10. memos (G/HI 실무 수납 메모 테이블)
+*전화통화 중 확인된 수납 진행상황을 실시간 기록하는 테이블입니다.*
+
+|| 필드명 | 타입 | 필수/선택 | 설명 |
+||---|---|---|---|
+|| `id` | Integer (PK) | 필수 | 메모고유번호 (중복불가) |
+|| `room_id` | Integer (FK→rooms.id) | 필수 | 어느호실의 수납과정에서 나온 메모인지 연결고리 |
+|| `contact_id` | Integer (FK→contacts.id) | 필수 | 어떤임차인 상호/성명과 얽힌 대화인지 연결고리 |
+|| `writer_user_id` | Integer (FK→users.id) | 필수 | 전화를 돌리고이 메모를 작성한 직원 ID |
+|| `memo_text` | Text | 필수 | "오늘 오후 3시 입금 약속" 등 실제 진행상황 내용 |
+|| `created_at` | Datetime (KST) | 자동 | 메모 기록일시 (`YYYY-MM-DD HH:MM:SS` KST 형식) |
+
+|---|
 
 ## 9. system_snapshots (데이터 복원을 위한 백업 및 변경 로그 테이블)
 *실수가 발생했을 시 모든 데이터를 즉시 복구(rollback)하기 위한 핵심 작업 테이블입니다.*
