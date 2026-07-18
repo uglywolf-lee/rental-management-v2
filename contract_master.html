@@ -44,30 +44,30 @@
     <!-- 좌측 입력/수정 창 -->
     <div class="left-form-panel">
         <div class="panel-title">📜 B. 계약서 마스터 관리</div>
-        <div class="alert-info">💡 규칙 8: 계약 수정 시 기존 계약은 자동으로 비활성화(is_active=0) 처리되며, 안전 스냅샷이 자동 백업됩니다.</div>
+        <div class="alert-info">💡 규칙 8: 계약 수정 시 기존 계약은 자동으로 비활성화 처리되며, 안전 스냅샷이 자동 백업됩니다.</div>
         
         <form onsubmit="event.preventDefault();">
             <div class="form-group">
-                <label>대상 호실 매칭 고유 ID (contracts.room_id)</label>
+                <label>대상 호실 고유번호</label>
                 <input type="number" class="form-control" placeholder="호실 번호 조회 연동" required>
             </div>
             <div class="row-grid">
                 <div class="form-group">
-                    <label>임대인 ID (owner_contact_id)</label>
+                    <label>임대인 고유번호</label>
                     <input type="number" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label>임차인 ID (tenant_contact_id)</label>
+                    <label>임차인 고유번호</label>
                     <input type="number" class="form-control" required>
                 </div>
             </div>
             <div class="row-grid">
                 <div class="form-group">
-                    <label>협력 중개사 ID (contracts.broker_id)</label>
+                    <label>협력 중개사 ID</label>
                     <input type="number" class="form-control" placeholder="자동 완성 지원">
                 </div>
                 <div class="form-group">
-                    <label>계약 형태 (contracts.lease_type)</label>
+                    <label>계약 종류</label>
                     <select class="form-control">
                         <option>월세</option>
                         <option>전세</option>
@@ -77,34 +77,34 @@
             </div>
             <div class="row-grid">
                 <div class="form-group">
-                    <label>보증금 원단위 정수 (deposit_amount)</label>
-                    <input type="number" class="form-control" placeholder="예: 50000000" required>
+                    <label>보증금 금액 (원)</label>
+                    <input type="number" class="form-control" placeholder="예: 5000만원" required>
                 </div>
                 <div class="form-group">
-                    <label>월 임대료 원단위 정수 (monthly_rent)</label>
-                    <input type="number" class="form-control" placeholder="예: 3500000" required>
+                    <label>월세 금액 (원)</label>
+                    <input type="number" class="form-control" placeholder="예: 35만원" required>
                 </div>
             </div>
             <div class="form-group">
-                <label>중개 수수료 정산액 (contracts.commission_fee)</label>
+                <label>중개 수수료 정산액</label>
                 <input type="number" class="form-control" placeholder="중개 파트너 정산용 금액">
             </div>
             <div class="row-grid">
                 <div class="form-group">
-                    <label>계약 시작일 (start_date)</label>
+                    <label>계약 시작일</label>
                     <input type="date" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label>계약 만료일 (end_date)</label>
+                    <label>계약 만료일</label>
                     <input type="date" class="form-control" required>
                 </div>
             </div>
             <div class="form-group">
-                <label>계약 스캔본 파일 링크 매핑 (Visible URL)</label>
+                <label>계약 원본 문서 업로드</label>
                 <input type="file" class="form-control">
             </div>
             <div class="btn-box">
-                <button type="submit" class="btn btn-main">신규 계약 체결 (INSERT)</button>
+                <button type="submit" class="btn btn-main">신규 계약 체결 (등록)</button>
                 <button type="button" class="btn btn-sub">계약 조건 변경</button>
             </div>
         </form>
@@ -122,15 +122,15 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>계약 ID</th>
+                            <th>No.</th>
                             <th>호실 ID</th>
                             <th>임대인</th>
                             <th>임차인</th>
-                            <th>형태</th>
-                            <th>보증금(표시)</th>
-                            <th>월세(총계)</th>
+                            <th>계약종류</th>
+                            <th>보증금</th>
+                            <th>월세총계</th>
                             <th>만료일 (요일)</th>
-                            <th>상태</th>
+                            <th>현재상태</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -152,7 +152,7 @@
         
         <!-- 하단: 실물 계약서 원본 상시 뷰어 -->
         <div class="document-viewer-section">
-            <div class="viewer-header">📄 실물 계약서 문서 원본 검증 (상시 노출) | 경로: uploads/contracts/</div>
+            <div class="viewer-header">📄 실물 계약서 문서 원본 검증 (상시 노출)</div>
             <div class="viewer-body">
                 <div class="pdf-mock">
                     <h4 style="text-align:center; margin-top:0; border-bottom:1px solid #333; padding-bottom:5px;">부동산 임대차 계약서 (원본)</h4>
