@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>계약서 관리 시스템 (사무인력 전용)</title>
+    <style>
+        :root { --primary: #fd7e14; --border: #dee2e6; --bg: #f8f9fa; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; overflow: hidden; background: var(--bg); }
+        
+        /* 좌측: 깔끔한 입력/수정 폼 패널 */
+        .left-form-panel { width: 40%; background: white; border-right: 1px solid var(--border); padding: 25px; overflow-y: auto; box-sizing: border-box; }
+        .panel-title { font-size: 1.15rem; color: var(--primary); margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid var(--primary); padding-bottom: 8px; font-weight: bold; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; color: #495057; }
+        .form-control { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.88rem; box-sizing: border-box; }
+        .row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-box { margin-top: 20px; display: flex; gap: 10px; }
+        .btn { flex: 1; padding: 10px; border: none; border-radius: 4px; font-size: 0.88rem; font-weight: bold; cursor: pointer; text-align: center; }
+        .btn-main { background: var(--primary); color: white; }
+        .btn-sub { background: #6c757d; color: white; }
+        .alert-info { background: #fff3cd; color: #856404; padding: 8px 12px; border-left: 4px solid #ffc107; font-size: 0.8rem; border-radius: 4px; margin-bottom: 15px; line-height: 1.4; }
+
+        /* 우측: 계약서 원본 뷰어 및 동일페이지 검색 테이블 패널 */
+        .right-viewer-panel { width: 60%; display: flex; flex-direction: column; height: 100%; }
+        
+        /* 상단 검색 테이블 */
+        .search-table-section { flex: 1; padding: 20px; overflow-y: auto; background: white; border-bottom: 1px solid var(--border); }
+        .search-bar { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 15px; }
+        .table-wrap { border: 1px solid var(--border); border-radius: 4px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+        th { background: #e9ecef; padding: 10px; border-bottom: 1px solid var(--border); font-weight: 600; }
+        td { padding: 9px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+        tr:hover { background: #f8f9fa; cursor: pointer; }
+        
+        /* 하단 계약서 상시 뷰어 */
+        .document-viewer-section { height: 40%; background: #525659; display: flex; flex-direction: column; }
+        .viewer-header { background: #dee2e6; padding: 6px 15px; font-size: 0.8rem; font-weight: bold; color: #495057; }
+        .viewer-body { flex: 1; display: flex; justify-content: center; align-items: center; padding: 15px; overflow: hidden; }
+        .pdf-mock { width: 85%; height: 95%; background: white; color: #333; padding: 20px; box-sizing: border-box; font-size: 0.78rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); overflow-y: auto; line-height: 1.6; }
+    </style>
+</head>
+<body>
+
+    <!-- 좌측 입력/수정 창 -->
+    <div class="left-form-panel">
+        <div class="panel-title">📜 B. 계약서 마스터 관리</div>
+        <div class="alert-info">💡 규칙 8: 계약 수정 시 기존 계약은 자동으로 비활성화(is_active=0) 처리되며, 안전 스냅샷이 자동 백업됩니다.</div>
+        
+        <form onsubmit="event.preventDefault();">
+            <div class="form-group">
+                <label>대상 호실 매칭 고유 ID (contracts.room_id)</label>
+                <input type="number" class="form-control" placeholder="호실 번호 조회 연동" required>
+            </div>
+            <div class="row-grid">
+                <div class="form-group">
+                    <label>임대인 ID (owner_contact_id)</label>
+                    <input type="number" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>임차인 ID (tenant_contact_id)</label>
+                    <input type="number" class="form-control" required>
+                </div>
+            </div>
+            <div class="row-grid">
+                <div class="form-group">
+                    <label>협력 중개사 ID (contracts.broker_id)</label>
+                    <input type="number" class="form-control" placeholder="자동 완성 지원">
+                </div>
+                <div class="form-group">
+                    <label>계약 형태 (contracts.lease_type)</label>
+                    <select class="form-control">
+                        <option>월세</option>
+                        <option>전세</option>
+                        <option>반전세</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row-grid">
+                <div class="form-group">
+                    <label>보증금 원단위 정수 (deposit_amount)</label>
+                    <input type="number" class="form-control" placeholder="예: 50000000" required>
+                </div>
+                <div class="form-group">
+                    <label>월 임대료 원단위 정수 (monthly_rent)</label>
+                    <input type="number" class="form-control" placeholder="예: 3500000" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>중개 수수료 정산액 (contracts.commission_fee)</label>
+                <input type="number" class="form-control" placeholder="중개 파트너 정산용 금액">
+            </div>
+            <div class="row-grid">
+                <div class="form-group">
+                    <label>계약 시작일 (start_date)</label>
+                    <input type="date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>계약 만료일 (end_date)</label>
+                    <input type="date" class="form-control" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>계약 스캔본 파일 링크 매핑 (Visible URL)</label>
+                <input type="file" class="form-control">
+            </div>
+            <div class="btn-box">
+                <button type="submit" class="btn btn-main">신규 계약 체결 (INSERT)</button>
+                <button type="button" class="btn btn-sub">계약 조건 변경</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 우측 상시 검증 패널 -->
+    <div class="right-viewer-panel">
+        <!-- 상단: 동일페이지 검색 리스트 -->
+        <div class="search-table-section">
+            <div class="search-bar">
+                <input type="text" class="form-control" placeholder="부동산별 계약 현황 / 기간별 갱신 대상 실시간 검색...">
+                <button class="btn btn-main" style="padding: 0 15px;">검색</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>계약 ID</th>
+                            <th>호실 ID</th>
+                            <th>임대인</th>
+                            <th>임차인</th>
+                            <th>형태</th>
+                            <th>보증금(표시)</th>
+                            <th>월세(총계)</th>
+                            <th>만료일 (요일)</th>
+                            <th>상태</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1024</td>
+                            <td>Room-201</td>
+                            <td>User-11</td>
+                            <td>User-99</td>
+                            <td>월세</td>
+                            <td>5,000만원</td>
+                            <td>350만원</td>
+                            <td>2028-07-17 (금)</td>
+                            <td><span style="color:green; font-weight:bold;">진행중</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 하단: 실물 계약서 원본 상시 뷰어 -->
+        <div class="document-viewer-section">
+            <div class="viewer-header">📄 실물 계약서 문서 원본 검증 (상시 노출) | 경로: uploads/contracts/</div>
+            <div class="viewer-body">
+                <div class="pdf-mock">
+                    <h4 style="text-align:center; margin-top:0; border-bottom:1px solid #333; padding-bottom:5px;">부동산 임대차 계약서 (원본)</h4>
+                    <p><b>[부동산의 표시]</b> 구로 테크노타운 A동 201호</p>
+                    <p><b>[계약 내용]</b> 보증금 금 오천만원정 (\50,000,000), 월세 금 삼백오십만원정 (\3,500,000) [지정 납부일 매월 15일]</p>
+                    <p><b>[임대인]</b> 김자산 (고유 번호 매핑)</p>
+                    <p><b>[임차인]</b> 주식회사 네트웍스 파트너스 (대표자 실명 확인 필)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
