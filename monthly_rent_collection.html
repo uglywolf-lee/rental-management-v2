@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>월세 납부 관리 장부 (사무인력 전용)</title>
+    <style>
+        :root { --primary: #17a2b8; --border: #dee2e6; --bg: #f8f9fa; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; overflow: hidden; background: var(--bg); }
+        
+        /* 좌측: 깔끔한 수납 입력/수정 패널 */
+        .left-form-panel { width: 40%; background: white; border-right: 1px solid var(--border); padding: 25px; overflow-y: auto; box-sizing: border-box; }
+        .panel-title { font-size: 1.15rem; color: var(--primary); margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid var(--primary); padding-bottom: 8px; font-weight: bold; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; color: #495057; }
+        .form-control { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.88rem; box-sizing: border-box; }
+        .row-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-box { margin-top: 20px; display: flex; gap: 10px; }
+        .btn { flex: 1; padding: 10px; border: none; border-radius: 4px; font-size: 0.88rem; font-weight: bold; cursor: pointer; text-align: center; }
+        .btn-main { background: var(--primary); color: white; }
+        .btn-sub { background: #6c757d; color: white; }
+    </style>
+</head>
+<body>
+
+    <!-- 좌측 입력/수정 창 -->
+    <div class="left-form-panel">
+        <div class="panel-title">💰 E. 월세 납입 관리 장부</div>
+        
+        <form onsubmit="event.preventDefault();">
+            <div class="form-group">
+                <label>연동 계약 마스터 ID (contracts.id)</label>
+                <input type="number" class="form-control" placeholder="상단 테이블 행 선택 시 자동 바인딩" required>
+            </div>
+            <div class="row-grid">
+                <div class="form-group">
+                    <label>실제 수납 일자 (bills.due_date 기준 정산)</label>
+                    <input type="date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>입금 금액 원단위 정수 (amount)</label>
+                    <input type="number" class="form-control" placeholder="예: 3500000" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>정산 처리 형태</label>
+                <select class="form-control">
+                    <option>정상 월세 완납</option>
+                    <option>일부 미납 (다음 달 잔액 이월)</option>
+                    <option>보증금 반환 대체 정산</option>
+                    <option>연체료 가산 수납</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>수납 확인 이력 변경 메모 (특이사항)</label>
+                <input type="text" class="form-control" placeholder="입금자 실명 상이 또는 지연 사유 요약">
+            </div>
+            <div class="btn-box">
+                <button type="submit" class="btn btn-main">납부 이력 반영 (INSERT)</button>
+                <button type="button" class="btn btn-sub">수납 수동 이력 조정</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 우측 상시 검증 패널 (구조적 통일을 위해 상단 대조링크 CSS 및 하단 원본 박스 동일 유지) -->
+    <div style="width: 60%; display: flex; flex-direction: column; height: 100%;">
+        <!-- 상단: 월별 수납현황 및 미납자리스트 동일페이지 검색 -->
+        <div style="flex: 1; padding: 20px; overflow-y: auto; background: white; border-bottom: 1px solid #dee2e6;">
+            <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 15px;">
+                <input type="text" class="form-control" placeholder="월별 수납 현황 / 미납자 명단 실시간 대조 검색...">
+                <button class="btn btn-main" style="padding: 0 15px;">조회</button>
+            </div>
+            <div style="border: 1px solid #dee2e6; border-radius: 4px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.82rem;">
+                    <thead>
+                        <tr style="background: #e9ecef;">
+                            <th style="padding:10px; text-align:left;">수납 ID</th>
+                            <th style="padding:10px; text-align:left;">계약 ID</th>
+                            <th style="padding:10px; text-align:left;">임차 상호/성명</th>
+                            <th style="padding:10px; text-align:left;">청구월</th>
+                            <th style="padding:10px; text-align:left;">약정일</th>
+                            <th style="padding:10px; text-align:left;">입금확인일 (요일)</th>
+                            <th style="padding:10px; text-align:left;">상태</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>902</td>
+                            <td>1024</td>
+                            <td>(주)네트웍스 파트너스</td>
+                            <td>2026-07</td>
+                            <td>매월 15일</td>
+                            <td>2026-07-15 (수)</td>
+                            <td><span style="color:blue; font-weight:bold;">완납</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 하단: 대조용 월세 계약 조건 검증용 상시 뷰어 -->
+        <div style="height: 40%; background: #525659; display: flex; flex-direction: column;">
+            <div style="background: #dee2e6; padding: 6px 15px; font-size: 0.8rem; font-weight: bold; color: #495057;">📄 해당 호실 월세 약정 조항 확인용 원본 계약서 뷰어</div>
+            <div style="flex: 1; display: flex; justify-content: center; align-items: center; padding: 15px; overflow: hidden;">
+                <div style="width: 85%; height: 95%; background: white; color: #333; padding: 20px; box-sizing: border-box; font-size: 0.78rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); overflow-y: auto;">
+                    <h4 style="text-align:center; margin-top:0; border-bottom:1px solid #333; padding-bottom:5px;">임대차 계약서 조항 요약</h4>
+                    <p><b>[제 2조 차임]</b> 임차인은 월세 금 \3,500,000을 매월 15일 임대인 지정 계좌로 입금하기로 약정함.</p>
+                    <p><b>[제 4조 연체]</b> 차임 지급이 2기 이상 지연될 경우 임대인은 계약 해지를 통보할 수 있음.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
