@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>시설 유지보수 및 파손신고 관리 (통합형)</title>
+    <style>
+        :root { --primary: #e83e8c; --border: #dee2e6; --bg: #f8f9fa; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; overflow: hidden; background: var(--bg); }
+        .left-panel { width: 35%; background: white; border-right: 1px solid var(--border); padding: 25px; overflow-y: auto; box-sizing: border-box; }
+        .right-panel { width: 65%; display: flex; flex-direction: column; box-sizing: border-box; overflow: hidden; background: white; }
+        .panel-title { font-size: 1.1rem; color: var(--primary); margin: 0 0 20px 0; border-bottom: 2px solid var(--primary); padding-bottom: 8px; font-weight: bold; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; color: #495057; }
+        .form-control { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.88rem; box-sizing: border-box; }
+        .btn-box { margin-top: 15px; display: flex; gap: 8px; }
+        .btn { flex: 1; padding: 10px; border: none; border-radius: 4px; font-size: 0.85rem; font-weight: bold; cursor: pointer; text-align: center; }
+        .btn-main { background: var(--primary); color: white; }
+        .btn-sub { background: #6c757d; color: white; }
+        .right-top { flex: 1; padding: 20px; overflow-y: auto; border-bottom: 1px solid var(--border); }
+        .search-bar { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 15px; }
+        .right-bottom { height: 40%; background: #525659; display: flex; flex-direction: column; overflow: hidden; }
+        .viewer-header { background: #dee2e6; padding: 6px 15px; font-size: 0.8rem; font-weight: bold; color: #495057; }
+        .viewer-body { flex: 1; display: flex; justify-content: center; align-items: center; padding: 15px; overflow-y: auto; }
+        .detail-card { width: 85%; font-size: 0.82rem; line-height: 1.6; color: #333; background: white; border-radius: 4px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .excel-table-wrap { overflow: auto; border: 1px solid #bbc4cc; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+        th { background: #f1f3f5; border: 1px solid #bbc4cc; padding: 6px 8px; font-weight: 600; position: sticky; top: 0; text-align: left; }
+        td { border: 1px solid #ced4da; padding: 6px 8px; white-space: nowrap; }
+        tr:nth-child(even) { background-color: #f8f9fa; color: #333; }
+    </style>
+</head>
+<body>
+    <div class="left-panel">
+        <div class="panel-title">🔧 F. 시설유지보수/파손신고 관리</div>
+        <form onsubmit="event.preventDefault();">
+            <div class="form-group">
+                <label>이슈 호실 ID (incidents.room_id)</label>
+                <input type="number" class="form-control" placeholder="문제가 생긴 호실입력" required>
+            </div>
+            <div class="form-group">
+                <label>사고 유형 분류 (incidents.category)</label>
+                <select class="form-control">
+                    <option>시설파손</option><option>무단점유</option><option>일반유지보수</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>실제 내용 기술 (incidents.description)</label>
+                <input type="text" class="form-control" placeholder="2층102호 화장실관파열 등 구체적기재필수">
+            </div>
+            <div class="form-group">
+                <label>누가 신고했는지 (incidents.reported_by_id)</label>
+                <input type="number" class="form-control" placeholder="유지보수인원ID매핑" required>
+            </div>
+            <div class="form-group">
+                <label>추산 수리비 원단위 (incidents.estimated_cost)</label>
+                <input type="number" class="form-control" placeholder="정산청구액입력(원)">
+            </div>
+            <div class="btn-box">
+                <button type="submit" class="btn btn-main">신규 파손신고등록</button>
+                <button type="button" class="btn btn-sub">상태변경 (접수중→완료)</button>
+            </div>
+        </form>
+    </div>
+    <div class="right-panel">
+        <!-- 상단: 유지보수현황표 -->
+        <div class="right-top">
+            <div class="search-bar">
+                <input type="text" class="form-control" placeholder="부동산별유지이력 / 파손별비용추계실시간검색...">
+                <button class="btn btn-main" style="flex:none; width:80px;">시현황 조회</button>
+            </div>
+            <div class="excel-table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>id (PK)</th><th>room_id</th><th>category</th><th>reported_by_id</th><th>estimated_cost</th><th>status (처리상태)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>772</td><td>Room-101</td><td>시설파손</td><td>User-58</td><td>3,200,000원</td><td style="color:orange; font-weight:bold;">접수중</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 하단: 상세내역/연계고리 검증뷰어 -->
+        <div class="right-bottom">
+            <div class="viewer-header">🔍 해당 호실 유지보수 이력 및 임차인청구 가능 여부 검증용 원본 연결고리 뷰어</div>
+            <div class="viewer-body">
+                <div class="detail-card">
+                    <h4 style="margin-top:0;">호실101호 파손신고 연계정보</h4>
+                    <p><b>[연계 계약서 ID]</b>: contracts.id = 1024 (current_room_status → 파손신고연결중)</p>
+                    <p><b>[임차인 연동 정보]</b>: contacts.company_or_name + representative_name(실명확인필)</p>
+                    <p><b>[추산수리비 정산기준]</b>: estimated_cost = 3,200,000원 (incidents.status가 '보급완료'되면 임차인청구가능상태로전환됨)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
