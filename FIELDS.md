@@ -136,8 +136,7 @@
 | 필드명 | 타입 | 필수/선택 | 설명 |
 |---|---|---|---|
 | `id` | Integer (PK) | 필수 | 고유 키값 |
-| `username` | Varchar(100) | 필수 | 로그인 아이디. |
-| `real_name` | Varchar(100) | 필수 | 실명 (보고서 작성 시 사용). |
+|| `employee_no` | Varchar(20) | 필수 | 사원고용번호EMP-001 형식 고정 — team_management.html의사번과 매핑됨 ||
 | `role_name` | Varchar(50) | 필수 | 권한 구분 ('super_admin', 'office_worker', 'maintenance_staff'). 역할별로 다른 UI화면이 열립니다. |
 | `password_hash` | Varchar(255) | 필수 | MD5/SHA256 등 해시된 비밀번호 (평문 절대 금지). |
 
