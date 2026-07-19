@@ -26,14 +26,16 @@
 <body>
 
 <div class="viewer-container">
-    <div class="sync-badge">spec_data.js 실시간 연동 중</div>
-    <div id="markdown-render">로딩 중...</div>
+    <div class="sync-badge">real_estate_system_spec.md 연동 중</div>
+    <div id="markdown-render">데이터를 불러오는 중...</div>
 </div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        if(typeof getMarkdownSpec !== 'undefined') {
-            document.getElementById('markdown-render').innerHTML = marked.parse(getMarkdownSpec());
+        if(typeof REAL_ESTATE_SYSTEM_SPEC !== 'undefined') {
+            document.getElementById('markdown-render').innerHTML = marked.parse(REAL_ESTATE_SYSTEM_SPEC);
+        } else {
+            console.error("real_estate_system_spec 데이터를 불러오지 못했습니다.");
         }
     });
 </script>
