@@ -2,307 +2,40 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>부동산 관리 DB 규칙 + 인터페이스 + 필드 연동 최종본</title>
+    <title>부동산 시스템 명세서 시각화 엔진</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="spec_data.js"></script>
     <style>
-    body { font-family: 'Segoe UI', sans-serif; margin: 20px; line-height: 1.6; background: #f8f9fa; color: #333; }
-    .container { max-width: 1050px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    h1 { font-size: 1.4rem; color: #007bff; margin-bottom: 20px; border-bottom: 2px solid #e9ecef; padding-bottom: 10px; }
-    h2 { font-size: 1.1rem; color: #333; margin-top: 25px; margin-bottom: 15px; border-bottom: 1px solid #007bff; padding-bottom: 6px; }
-    
-    .rule-card { background: #fff; border-left: 4px solid #007bff; padding: 10px 15px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-size: 0.92rem; display: flex; align-items: center; }
-    .rule-num { display: inline-block; background: #007bff; color: white; width: 24px; height: 24px; border-radius: 50%; text-align: center; line-height: 24px; font-weight: bold; font-size: 0.8rem; margin-right: 10px; flex-shrink: 0; }
-    
-    .hl-critical { border-left-color: #dc3545 !important; background: #fff5f5 !important; } .hl-critical .rule-num { background: #dc3545 !important; }
-    .hl-info { border-left-color: #17a2b8 !important; background: #e8f4fd !important; } .hl-info .rule-num { background: #17a2b8 !important; }
-    .hl-success { border-left-color: #28a745 !important; background: #f0fff4 !important; } .hl-success .rule-num { background: #28a745 !important; }
-    .hl-warning { border-left-color: #ffc107 !important; color: #333 !important; } .hl-warning .rule-num { background: #ffc107 !important; color: #333 !important; }
-
-    .db-table-wrap { margin-top: 20px; padding: 15px; background: #f4f6f8; border-radius: 6px; overflow-x: auto; }
-    .db-table-wrap h3 { font-size: 1rem; color: #495057; margin-bottom: 10px; border-bottom: 1px solid #dee2e6; padding-bottom: 5px; }
-    
-    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 600px; }
-    th, td { border: 1px solid #dee2e6; padding: 8px; text-align: left; white-space: nowrap; }
-    th { background-color: #e9ecef; font-weight: 600; }
-    tr:nth-child(even) { background-color: rgba(0,0,0,0.02); color: #333; }
-
-    .iface-card { border-radius: 6px; padding: 15px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); background: white; margin-bottom: 12px; display: flex; gap: 12px; align-items: flex-start; border-left: 4px solid #007bff; }
-    .iface-badge { font-size: 0.85rem; font-weight: bold; padding: 4px 10px; border-radius: 4px; min-width: 60px; text-align: center; flex-shrink: 0; color: white; background: #007bff; }
-    .iface-detail { font-size: 0.9rem; line-height: 1.5; color: #333; }
-    
-    .note-box { margin-top: 30px; padding: 15px; background: #e7f5ff; border-radius: 6px; font-size: 0.9rem; color: #004085; line-height: 1.6; }
-    .field-sync { margin-top: 15px; padding: 12px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 6px; font-size: 0.85rem; color: #856404; }
+        body { font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; margin: 0; padding: 30px; background: #f4f7f6; color: #2c3e50; line-height: 1.7; }
+        .viewer-container { max-width: 1000px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); }
+        .sync-badge { display: inline-flex; align-items: center; background: #e8f8f5; color: #1abc9c; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 20px; border: 1px solid #a3e4d7; }
+        .sync-badge::before { content: "●"; margin-right: 6px; font-size: 0.7rem; animation: blink 1.5s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        #markdown-render h1 { font-size: 1.8rem; color: #2980b9; border-bottom: 3px solid #3498db; padding-bottom: 12px; margin-top: 0; margin-bottom: 30px; text-align: center; }
+        #markdown-render h2 { font-size: 1.3rem; color: #2c3e50; border-left: 5px solid #3498db; padding-left: 12px; margin-top: 40px; margin-bottom: 15px; }
+        #markdown-render h3 { font-size: 1.1rem; color: #34495e; margin-top: 25px; margin-bottom: 10px; background: #f2f4f4; padding: 6px 12px; border-radius: 4px; }
+        #markdown-render ul, #markdown-render ol { padding-left: 22px; margin-bottom: 15px; font-size: 0.95rem; }
+        #markdown-render li { margin-bottom: 6px; }
+        #markdown-render code { font-family: 'Consolas', monospace; background: #f8f9f9; padding: 2px 6px; border-radius: 4px; color: #c0392b; font-size: 0.9em; border: 1px solid #e5e8e8; }
+        #markdown-render table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 25px; font-size: 0.9rem; }
+        #markdown-render th, #markdown-render td { padding: 10px 12px; border: 1px solid #eaeded; text-align: left; }
+        #markdown-render th { background-color: #34495e; color: white; font-weight: 600; }
+        #markdown-render tr:nth-child(even) td { background-color: #f8f9f9; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>📋 부동산 관리 시스템 — 규칙 + 필드표 + 인터페이스 완전 연동본 (최종)</h1>
-
-    <!-- ═══ 핵심 DB 규칙 ① ═══ -->
-    <h2>📜 핵심 DB 규칙 (1~8)</h2>
-    <div class="rule-card hl-success"><span class="rule-num">1</span>주소 기반 데이터베이스 (부동산의 근원은 주소지)</div>
-    <div class="rule-card"><span class="rule-num">2</span><b>핵심키는 별도 고유 ID — 주소는 속성일 뿐</b></div>
-    <div class="rule-card"><span class="rule-num">3</span>증가는 가능, 삭제는 불가능 (영구 폐기 절대 금지)</div>
-    <div class="rule-card"><span class="rule-num">4</span>부동산 특성에 따라 테이블값 형식特定 (상가/오피스텔/아파트/토지 등)</div>
-    <div class="rule-card"><span class="rule-num">5</span>데이터베이스 수정 가능</div>
-    <div class="rule-card hl-critical"><span class="rule-num">6</span><b>동일 주소 + 동일 층수/호실 조합에서만 중복 불가</b></div>
-    <div class="rule-card"><span class="rule-num">7</span>DB 직접 조작 시 로그 기록 필수</div>
-    <div class="rule-card hl-critical"><span class="rule-num">8</span><b>수정 시 신규 INSERT + 기존 비활성화 (is_active=0, DELETE 금지)</b></div>
-
-    <!-- ═══ 전역 표준 ═══ -->
-    <h2>📋 시스템 필드 전역 표준 (FIELDS.md 기준 — A~I 인터페이스 매핑됨)</h2>
-    <div class="rule-card"><span class="rule-num">9</span><b>시간/날짜:</b> DB저장: <code>YYYY-MM-DD HH:MM:SS</code> + 부동산 화면출력은 오직 <code>'YYYY-MM-DD (요일)'</code></div>
-    <div class="rule-card"><span class="rule-num">10</span><b>전화번호:</b> 반드시 <code>NN-NNNN-NNNN</code> 형식 고정 (하이픈 포함 14자리. 공백/괄호 금지)</div>
-    <div class="rule-card"><span class="rule-num">11</span><b>이메일:</b> <code>lowercase_text@domain.tld</code> (소문자 강제 변환 저장)</div>
-    <div class="rule-card"><span class="rule-num">12</span><b>금액(DB저장):</b> BigInt 원단위 정수. (예: 5000000)</div>
-    <div class="rule-card"><span class="rule-num">13</span><b>금액(화면표시):</b> 공과금 외 천/만원 단위, 공과금은 원단위 고정</div>
-    <div class="rule-card hl-info"><span class="rule-num">14</span><b>KST 한국타임:</b> 모든 테이블의 timestamps 통일. 부동산 항목 화면에서 시간 배제</div>
-
-    <!-- ═══ 권한/Lag/백업 규칙 ═══ -->
-    <h2>👥 사용자 권한 + 감사로그 + 시스템 백업 (15~23)</h2>
-    <div class="rule-card hl-warning"><span class="rule-num">15</span><b>관리자(거의 전권):</b> 모든 데이터 조작 권한 / 불특정사용자 접근차단</div>
-    <div class="rule-card"><span class="rule-num">16</span><b>사무인원:</b> 검색 + 입력만 (수정/삭제 불가)</div>
-    <div class="rule-card"><span class="rule-num">17</span><b>건물유지보수인:</b> 시설만 입력+조회 / 계약서수정불가</div>
-    <div class="rule-card hl-critical"><span class="rule-num">18</span><b>누가 어디에 무슨 짓을 했는지:</b> 로그파일 관리 + 감사로그테이블(db_logs) 필수저장</div>
-    
-    <h2>💾 시스템 백업 및 롤백 규칙 (19~23)</h2>
-    <div class="rule-card"><span class="rule-num">19</span><b>system_snapshots:</b> 수정전 반드시 이전상태 JSON 자동저장 (target_table_name, target_id, data_snapshot_json)</div>
-    <div class="rule-card"><span class="rule-num">20</span><b>rollback(복구):</b> 실수시 data_snapshot_json 값을 찾으면 INSERT/UPDATE — 즉시 복구 가능</div>
-    <div class="rule-card hl-info"><span class="rule-num">21</span><b>users + role_name:</b> super_admin / office_worker / maintenance_staff (아이디/이메일/비밀번호해시)</div>
-    <div class="rule-card hl-warning"><span class="rule-num">22</span><b>audit_logs.detail_log_json:</b> 변경전후값 기록 ('{ "target_id": 45, "old_value": 500000, "new_value": 600000 }')</div>
-    <div class="rule-card hl-critical"><span class="rule-num">23</span><b>핵심 데이터(contacts/bills/contracts) 수정전 ALWAYS 롤백-스냅샷 → is_restored=1 마킹 필수</b></div>
-
-    <!-- ═══ 🏗️ 페이지 제작·빌드·Rebuild 규칙 (24~32) ═══ -->
-    <h2>🏗️ Pages 빌드·Rebuild 규칙 (모든 페이지는 여기서 처음부터 복원 가능)</h2>
-    
-    <div class="rule-card hl-info"><span class="rule-num">24</span><b>모든 페이지는 독립된 단일 HTML + CSS + JS 파일로 작성하며 재패키징 시 /public/pages/ 에 배치됨. (예: /public/pages/interface-a.html) — DB 연동은 별도 REST API (/api/v1/)로 관리.</b></div>
-    <div class="rule-card"><span class="rule-num">25</span><b>디자인 토큰 통일 규칙:</b> 전역 CSS 변수 --primary (인터페이스별 고정색), --border, --bg 만 사용. 색상/폰트/패딩은 이 세 가지만 직접사용하고 개별style inline 금지.</div>
-    <div class="rule-card"><span class="rule-num">26</span><b>DB 필드명(contacts.*, bills.* 등) 화면에 노출 절대 불가! 모든 label/placeholder/th/td는 우리말/우리글로 치환. (규칙 14번의 KST+시간포맷과 병렬적용)</b></div>
-    <div class="rule-card"><span class="rule-num">27</span><b>페이지별 파일 구조: {page}.html (본체), {page}-styles.css(스타일), {page}-api.js(API연동), {page}-data.json(초기모의데이터). 패키징 시 이 4종为一组.</b></div>
-    <div class="rule-card"><span class="rule-num">28</span><b>Rebuild(재생성)규칙: 만약 DB/페이지가 모두 날라가도 다음 가이드라인대로 순서대로 실행하면 처음부터 완전 복원됨. (단계를 먼저 DB→rules.html → Pages 빌드순서)</b></div>
-    
-    <h3>📦 패키지 빌드 구조 (/package-rebuild/)</h3>
-    <div class="db-table-wrap" style="font-family:'Courier New',monospace!important; background:#f4f6f8"><pre>/package-rebuild/
-├── 01-db-scripts/          # 스키마·데이터 생성 SQL 파일들 (schema.sql, data_rooms.sql …)
-├── 02-rules-engine/        # rules.html + FIELDS.md — DB 구조 기준서 (모든 개발 이걸로 판정됨.)
-├── 03-api-endpoints/       # REST API 엔드포인트 정의 (/api/v1/buildings, contracts …)
-├── 04-ui-pages/            # {page}.html + 스타일 + 로직 ({interface-a}, {contract_master} …)
-└── BUILD-INSTRUCTIONS.md   # 빌드명령어 (docker-compose up, npm run build, python manage.py migrate 순서)</pre></div>
-
-    <h3>🔄 Rebuild 절차 (데이터/페이지 완전 유실 시)</h3>
-    <div class="rule-card hl-success"><span class="rule-num">29</span><b>Step1 — DB 재생성:</b> /01-db-scripts/schema.sql 실행 → 테이블 생성 후 contacts, users 등 초기테이블 seed 데이터 INSERT.</div>
-    <div class="rule-card hl-info"><span class="rule-num">30</span><b>규칙 적용:</b> /02-rules-engine/rules.html 기준서 검증 (필드명 매칭 실패시 즉시 수정). DB생성순서: buildings → rooms → contacts → contracts → bills → incidents → users·audit_logs.</div>
-    <div class="rule-card"><span class="rule-num">31</span><b>Step2 — 페이지 빌드(/04-ui-pages/):</b></div>
-    <div style="margin-left:36px; margin-bottom:8px;">① {interface-a}.html 빌드 → 부동산 인프라 등록 (buildings+rooms) → REST API /api/v1/buildings 연동.</div>
-    <div class="rule-card"><span class="rule-num">32</span><b>② {contract_master}→{monthly_rent_collection} 순서로 인터페이스별 HTML→API연동→테스트 → 전체 통합검증.</b></div>
-
-    <h2>📊 핵심 테이블 구조 명세 (rules.html = FIELDS.md — 완전 일치)</h2>
-    
-    <div class="db-table-wrap"><h3>① buildings · 부동산 정보</h3>
-        <table><thead><tr><th>필드명</th><th>타입</th><th>설명</th></tr></thead>
-        <tbody>
-            <tr><td>id (PK)</td><td>Integer</td><td>건물 고유KEY (중복없음, FK→contracts.property_id)</td></tr>
-            <tr><td>name</td><td>Varchar(255)</td><td>건물명/현장별고유명칭</td></tr>
-            <tr><td>address</td><td>Varchar(500)</td><td>실제주소핵심 (A-부동산매핑기준)</td></tr>
-            <tr><td>floors</td><td>Integer</td><td>총층수</td></tr>
-            <tr><td>rooms_count</td><td>Integer</td><td>전체호실수</td></tr>
-            <tr><td>is_active</td><td>Boolean</td><td>활성(1)/비활성(0)</td></tr>
-        </tbody></table>
-    </div>
-
-    <div class="db-table-wrap"><h3>② rooms · 호실 정보</h3>
-        <table><thead><tr><th>필드명</th><th>타입</th><th>설명</th></tr></thead>
-        <tbody>
-            <tr><td>id (PK)</td><td>Integer</td><td>호실 고유키 (FK→contracts.room_id)</td></tr>
-            <tr><td>building_id (FK)</td><td>Integer →buildings.id</td><td>소속건물ID</td></tr>
-            <tr><td>floor_no</td><td>Integer</td><td>층수(중복가능)</td></tr>
-            <tr><td>room_no</td><td>Varchar(50)</td><td>'101호' 등 호실명</td></tr>
-            <tr><td>area_sqm</td><td>Decimal(10,3)</td><td>면적 (㎡)</td></tr>
-            <tr><td>current_room_status</td><td>Varchar(50)</td><td>'비어있다','입주중' 등</td></tr>
-        </tbody></table>
-    </div>
-
-    <div class="db-table-wrap"><h3>③ contacts · 계약자+중개사(대표자포함) B2B통합</h3>
-        <table><thead><tr><th>필드명</th><th>타입</th><th>설명·매핑인터페이스</th></tr></thead>
-        <tbody>
-            <tr><td>id (PK)</td><td>Integer</td><td>연결고리(FK→contracts.owner_contact_id/tenant_contact_id/broker_id)</td></tr>
-            <tr><td>category</td><td>Varchar(50)</td><td>'tenant','landlord','broker','partner' 등</td></tr>
-            <tr><td><b>company_or_name</b></td><td>Varchar(255)</td><td>상호명/성명 (임차인·임대인·중개사 모두) — C-계약자입력항목 매핑</td></tr>
-            <tr><td><b>representative_name</b></td><td>Varchar(100)</td><td><b>대표자/담당자 실명 (법인·중개사 계약시 필수) — C-계약자입력항목에 매핑됨</b></td></tr>
-            <tr><td><b>contact_info</b></td><td>Varchar(50)</td><td>'<b>NN-NNNN-NNNN</b>' 고정 (하이픈포함 14자리) — C-연락처항목 매핑필드</td></tr>
-            <tr><td>email</td><td>Varchar(255)</td><td>소문자강제변환저장 — C-e메일항목매핑</td></tr>
-            <tr><td>documents_json</td><td>JSON/Text</td><td>'주민등록앞자리950101',신분증사본경로 — 주민번호뒷자리절대금지</td></tr>
-        </tbody></table>
-    </div>
-
-    <div class="db-table-wrap"><h3>④ contracts · 계약서 (중개수수료포함)</h3>
-        <table><thead><tr><th>필드명</th><th>타입</th><th>설명·매핑인터페이스</th></tr></thead>
-        <tbody>
-            <tr><td>id (PK)</td><td>Integer</td><td>계약서 고유키</td></tr>
-            <tr><td>room_id (FK)</td><td>Integer→rooms.id</td><td>해당호실ID — B-부동산매핑필드</td></tr>
-            <tr><td><b>owner_contact_id (FK)</b></td><td>Integer→contacts.id</td><td>임대인소유주 — C-계약자id 매핑</td></tr>
-            <tr><td><b>tenant_contact_id (FK)</b></td><td>Integer→contacts.id</td><td>임차인실세사용자 — C-계약자id 매핑</td></tr>
-            <tr><td><b>broker_id (FK)</b></td><td>Integer→contacts.id</td><td><b>중개사B2B협력사매칭 — B-계약서입력시자동채움+대표자명표기 매핑연동필요</b></td></tr>
-            <tr><td>lease_type</td><td>Varchar(50)</td><td>'전세','월세','반전세' 등</td></tr>
-            <tr><td><b>deposit_amount</b></td><td>BIGINT (원)</td><td><b>보증금 — E-월세납입매핑(BIGINT정수저장, 천/만원단위표시)</b></td></tr>
-            <tr><td><b>monthly_rent</b></td><td>BIGINT (원)</td><td><b>월임대료 — E+G-인터페이스총계매핑</b></td></tr>
-            <tr><td><b>commission_fee</b></td><td>BIGINT (원)</td><td><b>중개수수료 — B-계약서입력항목(C-contacts.category='broker') 매핑연동필수</b></td></tr>
-            <tr><td>start_date, end_date</td><td>Date</td><td>'YYYY-MM-DD' 계약시작/종료</td></tr>
-            <tr><td>is_active</td><td>Boolean</td><td>0:해지/만료 1:진행중 — B-계약수정항목매핑(삭제금지·스냅샷필수)</td></tr>
-        </tbody></table>
-    </div>
-
-    <div class="db-table-wrap"><h3>⑤ bills · 공과금 (FIXED: amount, NOT billing_amount)</h3>
-        <table><thead><tr><th>필드명</th><th>타입</th><th>설명·매핑인터페이스</th></tr></thead>
-        <tbody>
-            <tr><td>id (PK)</td><td>Integer</td><td>공과금관리청구용ID</td></tr>
-            <tr><td>room_id (FK)</td><td>Integer→rooms.id</td><td>청구대상호실ID</td></tr>
-            <tr><td>contact_id (FK)</td><td>Integer→contacts.id</td><td>고지대상최신계약자id</td></tr>
-            <tr><td><b>bill_type</b></td><td>Varchar(50)</td><td>'전기요금','수도요금','난방비','관리비','통신비','가스요금' — bills.bill_type 매핑(FIELDS.md⑤) <br/>D-고지금액전체항목확장매핑</td></tr>
-            <tr><td><b>amount (FIXED)</b></td><td>BIGINT (원)</td><td><b>청구금액(원단위정수) — D·F-공과금입력저장매핑. 필드명 rules.html·FIELDS.md완전히통일</b></td></tr>
-            <tr><td><b>due_date</b></td><td>Date</td><td>'YYYY-MM-DD'납부기한 — E-연체처리매핑(만기과초과시 상태변경됨)</td></tr>
-            <tr><td><b>is_paid</b></td><td>Boolean</td><td>0:미납 1:결제완료 — D-공과금관리입력수정검색모두매핑핵심상태필드</td></tr>
-        </tbody></table>
-    </div>
-
-    <div class="db-table-wrap"><h3>⑥-A. meter_readings · 계량검침 기록 (D인터페이스 전용)</h3>
-        <table><thead><tr><th>필드명</th><th>타입</th><th>설명·매핑인터페이스</th></tr></thead>
-        <tbody>
-            <tr><td>id (PK)</td><td>Integer</td><td>검침 기록 고유 번호</td></tr>
-            <tr><td>room_id (FK)</td><td>Integer→rooms.id</td><td>어느 호실의 검침인지 연결고리</td></tr>
-            <tr><td>bill_type</td><td>Varchar(50)</td><td>'전기요금', '수도요금' 등 유형 구분 (bills.bill_type과 매핑)</td></tr>
-            <tr><td>last_cumulative_reading</td><td>BigInt</td><td>지난달 최종 누적 계량값 (전월 비교용)</td></tr>
-            <tr><td>current_cumulative_reading</td><td>BigInt</td><td>이번달 실제 검침 누적값 (실제 입력 필드)</td></tr>
-            <tr><td>usage_amount</td><td>BigInt</td><td>이번달 사용량 계산 결과 (current - last)</td></tr>
-            <tr><td>billing_amount_won</td><td>BigInt (원)</td><td>확정 요금 (원단위 정수 저장, bills.amount 생성 기준)</td></tr>
-            <tr><td>billing_period_start, billing_period_end</td><td>Date</td><td>'YYYY-MM-DD' 실제 사용 기간</td></tr>
-            <tr><td>due_date</td><td>Date</td><td>납부기한 (bills.due_date와 동일 매핑)</td></tr>
-        </tbody></table>
-    </div>
-
-    <div class="db-table-wrap"><h3>⑥ incidents · 유지보수·사건사고</h3>
-        <table><thead><tr><th>필드명</th><th>타입</th><th>설명·매핑인터페이스</th></tr></thead>
-        <tbody>
-            <tr><td>id (PK)</td><td>Integer</td><td>유지보수기록ID</td></tr>
-            <tr><td>room_id (FK)</td><td>Integer→rooms.id</td><td>이슈호실ID — F-파손신고매핑필드</td></tr>
-            <tr><td>category</td><td>Varchar(50)</td><td>'시설파손','무단점유','일반유지보수' — F-U 유형매핑</td></tr>
-            <tr><td><b>description</b></td><td>Text</td><td><b>'2층102호 화장실관파열' 등 — F-유지보수내용입력매핑필드</b></td></tr>
-            <tr><td><b>reported_by_id (FK)</b></td><td>Integer→users.id</td><td><b>누가신고했는지(유지보수인원id) — F+I-신고자매핑 + I(대시보드)연계필드</b></td></tr>
-            <tr><td><b>estimated_cost</b></td><td>BIGINT (원)</td><td><b>수리비추산액(F/I정산금액항목매핑) 임차인청구시연결고리핵심필드</b></td></tr>
-            <tr><td><b>status</b></td><td>Varchar(50)</td><td>'접수중'→'보급완료' — F-인터페이스처리상태변경매핑</td></tr>
-        </tbody></table>
-    </div>
-
-    <div class="db-table-wrap"><h3>⑦ users & audit_logs · 직원권한+감사로그(rollback 매핑)</h3>
-        <table><thead><tr><th>필드명</th><th>타입</th><th>설명·매핑인터페이스(I+G+H)</th></tr></thead>
-        <tbody>
-            <tr><td>id (PK), employee_no, real_name</td><td>Integer/Varchar/Varchar</td><td>I-직원용대시보드사번/실명항목연계고정매핑필드</td></tr>
-            <tr><td><b>role_name</b></td><td>Varchar(50)</td><td>'super_admin','office_worker','maintenance_staff' — I+G+H접속권한매핑핵심필드</td></tr>
-            <tr><td>password_hash</td><td>Varchar(255)</td><td>SHA256등해시비밀번호(평문금지는17번규칙매핑)</td></tr>
-        </tbody></table>
-    </div>
-
-    <!-- ═══ I. 인터페이스 정의 (A~I 완전연동본) ═══ -->
-    <h2>🖥️ 구현할 인터페이스 목록 (A~I — 필드명 FIELDS.md 완전일치)</h2>
-
-    <div style="display: grid; gap: 15px; margin-top: 15px;">
-        <div class="iface-card" style="border-left-color:#28a745">
-            <span class="iface-badge" style="background:#28a745">A</span>
-            <div class="iface-detail"><b>A. 부동산 관리:</b><br/>
-              입력: buildings.name/address/floors/rooms_count + rooms.floor_no/room_no/area_sqm(FIELDS.md①②일치매핑)<br/>
-              수정: is_active=0→신규ROW(8번규칙매핑) / 검색: address LIKE '%%'주소별현황리스트</div>
-        </div>
-
-        <div class="iface-card" style="border-left-color:#fd7e14">
-            <span class="iface-badge" style="background:#fd7e14">B</span>
-            <div class="iface-detail"><b>B. 계약서 관리:</b><br/>
-              입력: contracts.lease_type/deposit_amount/monthly_rent/<b>commission_fee(중개수수료)</b>+owner/tenant_contact_id(contacts.id매핑)<br/>
-              계약서원본PDF/JPG→uploads/contracts/2025_001.pdf (상시옆에 떠있는 visible 저장)<br/>
-              수정: 신규INSERT 기존is_active=0(8번규칙+시스템백업스냅샷자동저장) 매핑</div>
-        </div
-        </div>
-
-        <div class="iface-card" style="border-left-color:#6f42c1">
-            <span class="iface-badge" style="background:#6f42c1">C</span>
-            <div class="iface-detail"><b>C. 계약자 관리:</b><br/>
-              입력: contacts.company_or_name (필드명FIXED), <b>representative_name대표자명(FIELDS③매핑), contact_info='NN-NNNN-NNNN'</b>, email, documents_json<br/>
-              수정: 동일id기저is_active=0 +신규ROW / 검색: company_or_name LIKE '%%'/연체조회/해지여부일관매핑</div>
-        </div>
-
-        <div class="iface-card" style="border-left-color:#dc3545">
-            <span class="iface-badge" style="background:#dc3545">D</span>
-            <div class="iface-detail"><b>D. 공과금 검침+고지 관리:</b><br/>
-              <code>&lt;h2&gt;검침등록페이지&lt;/h2&gt;</code> + <code>&lt;h2&gt;고지서발급&lt;/h2&gt;</code> 양쪽에서 동시입력.<br/>
-              <b>비즈니스 로직 연동:</b> 매월 검침 등록 시 <code>last_cumulative_reading</code>(전월)과 <code>current_cumulative_reading</code>(당월) 값을 대조하여 실제 사용량(<code>usage_amount</code>)이 자동 산출되며, 해당 요금 계산을 거쳐 <code>bills.amount</code> 필드로 자동 변환되어 생성·연동됩니다.</div>
-        </div>
-
-        <div class="iface-card" style="border-left-color:#17a2b8">
-            <span class="iface-badge" style="background:#17a2b8">E</span>
-            <div class="iface-detail"><b>E. 월세 납입 관리:</b><br/>
-              입력: deposit_amount + monthly_rent(bills.amount)/납부일/정산내역(보증금반환)<br/>
-              수정: 납부이력변경 연체처리이역 / 검색: 월별납현황총계요약/미납자리스트</div>
-        </div>
-
-        <div class="iface-card" style="border-left-color:#e83e8c">
-            <span class="iface-badge" style="background:#e83e8c">F</span>
-            <div class="iface-detail"><b>F. 시설유지보수(INCIDENTS):</b><br/>
-              입력: incidents.description(room_id FK+reported_by_id(FK→users.id) 매핑필드)/ estimated_cost/estimated_cost<br/>
-              수정: status('접수중'→'완료') / 실제수리비정산 / 검색: 부동산별유지이력(연결고리핵심)<br/></div>
-        </div>
-
-        <div class="iface-card" style="border-left-color:#20c997">
-            <span class="iface-badge" style="background:#20c997">G</span>
-            <div class="iface-detail"><b>G. 통합 월세 관리 인터페이스:</b><br/>
-              전체: 부동산별·계약자별월세총입금+모든공과금( bills.amount )/보증금반환현황판한눈에매핑필드<br/></div>
-        </div>
-
-        <div class="iface-card" style="border-left-color:#ffc107">
-            <span class="iface-badge" style="background:#ffc107; color:#333;">H</span>
-            <div class="iface-detail"><b>H. 통합 계약 관리 인터페이스:</b><br/>
-              전체: 모든계약의만기/갱신/해지현황 + 다음행위추적표 — 계약서+계약자+부동산연결고리 한눈에<br/></div>
-        </div>
-
-        <div class="iface-card" style="border-left-color:#6419e3">
-            <span class="iface-badge" style="background:#6419e3; color:white;">G</span>
-            <div class="iface-detail"><b>G. 통합 월세 관리 + 실무 메모 인터페이스:</b><br/>
-              전체: 부동산별·계약자별월세총입금+모든공과금( bills.amount )/보증금반환현황판한눈에매핑필드<br/>
-              <b>메모기능:</b> g_h_i_dashboard.html의 ✍️ 수납진행상황 메모창 — DB의 `memos` 테이블에 자동저장됨.<br/>
-              <code>memos.room_id(FK→rooms.id)</code>, <code>memos.contact_id(FK→contacts.id)</code>, <code>memos.writer_user_id(FK→users.id)</code>, <code>memos.memo_text(Text필수)</code>, <code>memos.created_at(Datetime KST 자동)</code><br/>
-              각 ROW에 <code>&lt;input type="text" class="ledger-memo-input"&gt;</code> → onChange로 API POST /api/v1/memos 자동저장</div>
-        </div>
-
-        <div class="iface-card" style="border-left-color:#6610f2; background: linear-gradient(135deg, white 70%, #fff3cd);">
-            <span class="iface-badge" style="background:#6610f2">I</span>
-            <div class="iface-detail"><b>I. 직원용 대시보드 (전체종합):</b><br/>
-              부동산총수량·계약현황·미납월세(contacts.bills.is_paid+ bills.amount연결고리)/예외사건(파손/repairs) 통합.<br/>
-              <code>users.role_name('super_admin'/'office_worker'/'maintenance_staff')</code>로접근제한 — audit_logs.detail_log_json전부매핑<br/></div>
-        </div>
-    </div>
-
-    <div class="note-box">💡 <b>최종확인:</b><br/>
-      • rules.html 필드명 = FIELDS.md = interfaces.html 일치완료 · bills.amount/representative_name/broker_id 모두FIXED<br/>
-      • 모든 테이블은 소문자_스네이크케이스명 · DB삭제절대불가·is_active=0만비활성화(규칙3·8)<br/>
-      • system_snapshots rollback: 핵심데이터수정전반드시자동저장 → is_restored=1 마킹(23번규칙)</div>
-
-    <!-- ═══ G/HI 실무 메모 + 규칙 35 매핑 ═══ -->
-    <h2>📝 규칙 35 — G/HI 실무 통합 대시보드 (수납 메모 DB 매핑)</h2>
-    <div class="rule-card hl-success"><span class="rule-num">35</span><b>G/HI 실무통합대시보드:</b><br/>
-      페이지: g_h_i_dashboard.html (HTML/CSS/JS 단일파일)<br/>
-      테이블: memos (FIELDS.md⑩)<br/>
-      필드매핑:<br/>
-      <code>memos.id</code> → UI순번 / <code>memos.room_id(FK→rooms.id)</code> → 호실정보 / <code>memos.contact_id(FK→contacts.id)</code> → 계약상호명<br/>
-      <code>memos.writer_user_id(FK→users.id)</code> → 담당자ID / <code>memos.memo_text(Text필수)</code> → ✍️실제메모텍스트 / <code>memos.created_at(Datetime KST자동)</code> → 기록일시<br/>
-      <b>UI규칙:</b> 각 ROW에 <code>&lt;input class="ledger-memo-input"&gt;</code> — onChange로 POST /api/v1/memos 자동저장. 영문필드명절대UI표시금지.</div>
-
-    <!-- ═══🔐 규칙 40 팀원관리 최종 매핑 ═══ -->
-    <h2>🔐 규칙 40 — 팀원관리 페이지 DB규칙 (team_management.html)</h2>
-    <div class="rule-card hl-success">
-        <span class="rule-num">40</span>
-        <b>J. 팀원등록 페이지 필드 동기화 규칙:</b><br/>
-        사번/고용번호 식별자는 <code>users.employee_no</code> 필드를 필수 매핑하며, 데이터 형식은 <code>Varchar(20)</code> 및 <code>'EMP-001'</code> 포맷으로 고정합니다. 기존의 이메일 계정 입력 방식은 전면 제거하며, 접속 비밀번호(<code>password_hash</code>)는 최소 길이 제약 조건인 <code>minimum_length=6</code>을 필수로 검증합니다.
-    </div>
-
+<div class="viewer-container">
+    <div class="sync-badge">spec_data.js 실시간 연동 중</div>
+    <div id="markdown-render">로딩 중...</div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if(typeof getMarkdownSpec !== 'undefined') {
+            document.getElementById('markdown-render').innerHTML = marked.parse(getMarkdownSpec());
+        }
+    });
+</script>
 </body>
 </html>
