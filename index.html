@@ -17,13 +17,14 @@
   .menu-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);transition:left .5s ease}
   .menu-btn:hover::before{left:100%}
   .user-area{display:flex;align-items:center;gap:12px;min-width:240px;justify-content:flex-end}
-  #empBadge{background:rgba(46,204,113,.15);color:#2ecc71;padding:6px 10px;border-radius:20px;font-size:12.5px;border:1px solid rgba(46,,#e74c3c !important;background:transparent;border:1.5px solid #c0392b;padding:6px 14px;border-radius:6px;font-size:13px;cursor:pointer;transition:all .2s ease;display:flex;align-items:center;gap:4px;white-space:nowrap}
+  #empBadge{background:rgba(46,204,113,.15);color:#2ecc71;padding:6px 10px;border-radius:20px;font-size:12.5px;border:1px solid rgba(46,204,113,.3);white-space:nowrap}
+  .logout-btn{color:#e74c3c !important;background:transparent;border:1.5px solid #c0392b;padding:6px 14px;border-radius:6px;font-size:13px;cursor:pointer;transition:all .2s ease;display:flex;align-items:center;gap:4px;white-space:nowrap}
   .logout-btn:hover{background:#c0392b;color:white !important;border-color:#e74c3c;transform:scale(1.05)}</style>
 </head>
 <body>
 
 <div id="topBar">
-  <div class="logo-area"><div class="logo-icon"></div><div class="logo-text"> 부동산管理系统</div></div>
+  <div class="logo-area"><div class="logo-icon">🏢</div><div class="logo-text">부동산管理시스템</div></div>
   <div id="menuArea" class="menu-area"></div>
   <div class="user-area">
     <span id="empBadge">EMP-001님</span>
@@ -48,7 +49,7 @@
   var menuArea = document.getElementById('menuArea');
 
   btns.forEach(function(b){
-    var a = document.createElement(a)
+    var a = document.createElement('a')
     a.href = 'javascript:void(0)';
     a.className = 'menu-btn';
     a.textContent = b.l;
