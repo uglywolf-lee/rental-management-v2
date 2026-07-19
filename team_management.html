@@ -42,8 +42,8 @@
             <div class="alert-box alert-info">💡 보안: 비밀번호는 암호화해시 저장. 신규가입은 SUPER_admin 승인필수.</div>
 
             <div class="form-group">
-                <label>시스템 로그인용 계정명</label>
-                <input type="text" class="form-control" placeholder="예: staff01@our-building" required>
+                <label>사번 (고용번호)</label>
+                <input type="text" class="form-control" placeholder="예: EMP-001 (고유식별번호)" required>
             </div>
             <div class="form-group">
                 <label>실제 성명</label>
@@ -59,7 +59,7 @@
             <div class="form-group">
                 <label>역할 구분 (role_name 지정필수)</label>
                 <select class="form-control">
-                    <option value="">—역할선택하세요—</option>
+                    <option value="">역할선택하세요 (필수)</option>
                     <option value="super_admin">최상위권한자 (전체관리/설정변경가능)</option>
                     <option value="office_worker">사무인력 (계약수정/조회만가능)</option>
                     <option value="maintenance_staff">유지보수직원등록/관리자 (신고접수만가능)</option>
@@ -91,7 +91,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>No.</th><th>계정명</th><th>실명</th><th>역할종류</th><th>등록시점(요일)</th><th>사용상태</th>
+                            <th>사원ID(고용번호)</th><th>직책명</th><th>실명</th><th>역할종류</th><th>등록시점(요일)</th><th>사용상태</th>
                         </tr>
                     </thead>
                     <tbody>
