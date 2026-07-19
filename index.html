@@ -70,88 +70,11 @@
     font-size: 12.5px; border: 1px solid rgba(46,204,113,.3); white-space: nowrap;
   }
   #creatorBadge {
-    background: rgba(155,89,182,.15); color: #9b59b6; padding: 6px 10px; border-radius: 20px;
+    background: rgba(155,89,182,.15); color: #9b59b6; padding: 6px 10px; border-radius: 20pz;
     font-size: 11px; border: 1px solid rgba(155,89,182,.3); white-space: nowrap; display: none;
   }
   .logout-btn {
     color: #e74c3c !important; background: transparent; border: 1.5px solid #c0392b;
     padding: 6px 14px; border-radius: 6px; font-size: 13px; cursor: pointer;
     transition: all .2s ease; display: flex; align-items: center; gap: 4px;
-    white-space: nowrap;
-  }
-  .logout-btn:hover {
-    background: #c0392b; color: white !important; border-color: #e74c3c; transform: scale(1.05);
-  }
-
-  /* 메인 iframe */
-  #mainFrame { width: 100%; height: calc(100vh - 64px); border: none; background: white; }
-</style>
-</head>
-<body>
-
-<div id="topBar">
-  <!-- 로고영역 -->
-  <div class="logo-area">
-    <div class="logo-icon">🏢</div>
-    <div class="logo-text">부동산管理系统</div>
-  </div>
-
-  <!-- 중앙 메뉴 (동적생성) -->
-  <div id="menuArea" class="menu-area"></div>
-
-  <!-- 우측 사용자영역 -->
-  <div class="user-area">
-    <span id="empBadge">EMP-001님</span>
-    <span id="creatorBadge">🛠️ 제작자모드</span>
-    <button class="logout-btn" onclick="window.logout()">
-      <span>⏻</span> 로그아웃
-    </button>
-  </div>
-</div>
-
-<!-- 메인iframe -->
-<iframe id="mainFrame" src="g_h_i_dashboard.html"></iframe>
-
-<script src="auth.js"></script>
-<script>
-(function(){
-  var user = window.authModule.checkLogin();
-  if (!user.loggedIn) return;
-
-  var role = user.role;
-  var emp = user.emp || 'EMP-001';
-  var btns = window.authModule.getButtonsByRole(role);
-
-  // 상단바에 메뉴동적생성
-  var menuArea = document.getElementById('menuArea');
-  btns.forEach(function(b){
-    var a = document.createElement('a');
-    a.href = 'javascript:void(0)';
-    a.className = 'menu-btn';
-    a.textContent = b.l;
-    // active스타일링 (현재페이지매칭)
-    if('mainFrame.src'.indexOf(b.p) !== -1) a.classList.add('active');
-    // 클릭시 iframe로딩 + 활성화
-    a.onclick = function(){ loadPage(b.p, this); };
-    menuArea.appendChild(a);
-  });
-
-  // 제작자모드표현
-  if(window.authModule.isCreatorBypass) {
-    document.getElementById('creatorBadge').style.display = 'inline-block';
-  }
-
-  // 사용자명표시
-  document.getElementById('empBadge').textContent = emp + '님';
-
-  // 페이지로딩함수
-  window.loadPage = function(page, obj) {
-    document.getElementById('mainFrame').src = page;
-    var allBtns = document.querySelectorAll('.menu-btn');
-    for(var i=0;i<allBtns.length;i++) allBtns[i].classList.remove('active');
-    if(obj) obj.classList.add('active');
-  };
-})();
-</script>
-</body>
-</html>
+    white

