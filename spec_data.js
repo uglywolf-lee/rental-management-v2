@@ -64,6 +64,7 @@ window.REAL_ESTATE_SYSTEM_SPEC = `
 * ${'`'}commission_fee${'`'} (BigInt, 중개수수료)
 * ${'`'}start_date${'`'} / ${'`'}end_date${'`'} (Date, Req)
 * ${'`'}is_active${'`'} (Boolean, Req, Def 1, 삭제금지)
+* ${'`'}documents_json${'`'} (JSON/Text, 신분증사본·사업자등록증사본계약서원본업로드파일경로배열또는JSON)
 
 ### bills (공과금 및 청구 마스터)
 * ${'`'}id${'`'} (Integer, PK, AI)
@@ -110,7 +111,7 @@ window.REAL_ESTATE_SYSTEM_SPEC = `
 
 ## 3. INTERFACE_MAPPING
 * [A] 부동산 관리: ${'`'}buildings${'`'} & ${'`'}rooms${'`'} 등록, 주소 검색 (${'`'}LIKE${'`'}), 수정 시 R8 버전관리 적용.
-* [B] 계약서 관리: 계약 조건 기입, 수수료 정산 결합, 원본 서류(PDF/JPG) 업로드 및 상시 고정 뷰어 노출.
+* [B] 계약서 관리: (1)임차인정보탭→contacts.company_or_name+representative_name+NN-NNNN-NNNN입력→자동INSERT,(2)계약조건탭→lease_type/deposit_amount/monthly_rent/start_date/end_date 입력,(3)문서업로드탭→신분증사본·사업자등록증사본·계약서원본 documents_json저장.모든고유번호(KFK매핑)은DB에서만연동된UI화면에는노출안됨.상시고정뷰어노출.
 * [C] 계약자 관리: ${'`'}contacts.company_or_name${'`'}, ${'`'}representative_name${'`'} 필수, 연락처 ${'`'}NN-NNNN-NNNN${'`'} 유효성 검증 적용.
 * [D] 공과금 검침/고지: 양방향 멀티 입력 UI. 당월 검침 등록 시 사용량 및 요금(${'`'}bills.amount${'`'}) 실시간 파생 생성 연동.
 * ${'`'}[E] 월세 납입${'`'}: 수납 요약, 보증금 반환 정산, ${'`'}bills.is_paid${'`'} 수납 확인 처리 및 미납 리스트 자동 추출.
