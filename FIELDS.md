@@ -95,7 +95,25 @@
 | `due_date` | Date | 필수 | 납부기한. 이 날짜를 넘어가면 연체 상태가 됩니다. |
 | `is_paid` | Boolean | 필수 / 선택 | 0=미납, 1=결제완료. 실세 입금 확인 시 업데이트해야 합니다. |
 
----
+|---|
+
+## 6-A. meter_readings (계량검침 기록 테이블) — D인터페이스 전용
+*전기/수도 미터기의 실제 누적 검침값을 매월 입력·저장하는 테이블입니다. bills.amount는 이 데이터를 기준으로 요금 계산 후 생성됩니다.*
+
+|| 필드명 | 타입 | 필수/선택 | 설명 |
+||---|---|---|---|
+|| `id` | Integer (PK) | 필수 | 검침기록고유번호 |
+|| `room_id` | Integer (FK→rooms.id) | 필수 | 어느 호실의 검침인지 연결고리 |
+|| `bill_type` | Varchar(50) | 필수 | '전기요금' / '수도요금' 등 유형구분 |
+|| `last_cumulative_reading` | BigInt (kWh/톤) | 선택 | 지난달 최종 누적 계량값 (전월비교용). 전기=kWh, 수도=톤 단위 |
+|| `current_cumulative_reading` | BigInt (kWh/톤) | 필수 | 이번달 실제 검침 누적값. 전월빼면사용량 자동계산됨 |
+|| `usage_amount` | BigInt (kWh/톤) | 선택 | 사용량 계산결과: current - last. bills.amount 생성시 기준이 됨 |
+|| `billing_amount_won` | BigInt (원) | 필수 | 확정요금 (원단위 정수). 한전/수도공사 고지서 금액 그대로 저장 |
+|| `billing_period_start` | Date | 필수 | 사용기간 시작일 ('YYYY-MM-DD') |
+|| `billing_period_end` | Date | 필수 | 사용기간 종료일 ('YYYY-MM-DD') |
+|| `due_date` | Date | 필수 | 납부기한. bills.due_date와 동일 |
+
+|---|
 
 ## 6. incidents (유지보수 및 사건사고 테이블)
 *건물의 파손, 무단점유 등 계약서와 별개로 별도 관리해야 하지만 해당 건물의 ID를 통해 한눈에 볼 수 있습니다.*

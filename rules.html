@@ -218,9 +218,9 @@
 
         <div class="iface-card" style="border-left-color:#dc3545">
             <span class="iface-badge" style="background:#dc3545">D</span>
-            <div class="iface-detail"><b>D. 공과금 관리:</b><br/>
-              입력: bills.bill_type(='전기요금'/'관리비'/...)/amount(원단위정수저장/FIELDS⑤매핑)/due_date<br/>
-              수정: is_paid=1/금액변경 / 검색: 미납현황(bills.is_paid=0)/물별청구리스트</div>
+            <div class="iface-detail"><b>D. 공과금 검침+고지 관리:</b><br/>
+              <code>&lt;h2&gt;검침등록페이지&lt;/h2&gt;</code> + <code>&lt;h2&gt;고지서발급&lt;/h2&gt;</code> 양쪽에서 동시입력.<br/>
+              DB연결고리: bills.bill_type ← meter_readings.bill_type 매핑. 요금계산은 meters → bills로 자동전환됨.</div>
         </div>
 
         <div class="iface-card" style="border-left-color:#17a2b8">
