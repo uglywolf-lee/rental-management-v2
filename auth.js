@@ -55,7 +55,7 @@
     var allBtns = [
       {c:'A', l:'부동산',     p:'interface-a.html'},
       {c:'B', l:'계약서',     p:'contract_master.html'},
-      {c:'C', l:'협력사',     p:'contractor_roster.html'},
+      {c:'C', l:'계약자',     p:'contractor_roster.html'},
       {c:'D', l:'공과금검침',  p:'utility_bills.html'},
       {c:'E', l:'월세납부',   p:'monthly_rent_collection.html'},
       {c:'F', l:'유지보수',    p:'incidents_maintenance.html'},
