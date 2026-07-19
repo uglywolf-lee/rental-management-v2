@@ -5,7 +5,7 @@
     <title>프로그램 사용기록 조회 대시보드</title>
     <style>
         :root { --primary: #6f42c1; --border: #dee2e6; --bg: #f8f9fa; }
-        body { font-family: 'Segoe UI', sans-serif; margin-top: 64px !important; display: flex; background-color: #f8f9fa; }
+        body { font-family: 'Segoe UI', sans-serif; margin-top: 64px !important; display: flex; height: calc(100vh - 64px); overflow: hidden; background-color: #f8f9fa; }
         
         /* 좌측: 검색/필터 패널 */
         .left-panel { width: 35%; background: white; border-right: 1px solid var(--border); padding: 25px; overflow-y: auto; box-sizing: border-box; }
@@ -21,7 +21,7 @@
         .alert-info { background: #f3e9ff; color: #5a2d8a; border-left: 3px solid #6f42c1; }
 
         /* 우측: 검색결과 테이블 패널 */
-        .right-panel { width: 70%; display: flex; flex-direction: column; box-sizing: border-box; overflow: hidden; }
+        .right-panel { width: 65%; display: flex; flex-direction: column; box-sizing: border-box; overflow: hidden; }
         .search-bar { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 15px; padding: 20px; background: white; border-bottom: 1px solid var(--border); }
         /* 엑셀 테이블 */
         .excel-table-wrap { flex: 1; overflow: auto; border: 1px solid #bbc4cc; }
