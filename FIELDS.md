@@ -89,7 +89,7 @@
 | `id` | Integer (PK) | 필수 | 고유 키값 |
 | `room_id` | Integer (FK→rooms.id) | 필수 | 청구 대상 호실 ID |
 | `contact_id` | Integer (FK→contacts.id) | 선택 | 누구에게 고지할지 (계약서가 여러 개일 경우, 최신 계약자의 ID가 자동 매칭됩니다) |
-| `bill_type` | Varchar(50) | 필수 | 유형: '전기요금', '수도요금', '난방비', '관리비', '통신비' 등. |
+| `bill_type` | Varchar(50) | 필수 | '전기요금','수도요금','난방비','관리비','통신비','가스요금' 등 bills.bill_type 매핑(D-통합검침+고지확장) |
 | `amount` | BigInt (원) | 필수 | 청구 금액 (`NN-NNNN-NNNN` 형식 고정 - 하이픈 포함 최대 16자리) |
 | `billing_period_start`, `billing_period_end` | Date | 필수 | 실제 사용기간 (예: 1월 1일 ~ 1월 31일) |
 | `due_date` | Date | 필수 | 납부기한. 이 날짜를 넘어가면 연체 상태가 됩니다. |
