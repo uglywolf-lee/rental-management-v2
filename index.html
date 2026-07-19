@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>부동산관리시스템 통합메인</title>
+<style>
+  body { margin:0;padding-top:50px;background:#f4f6f9;font-family:'Segoe UI',sans-serif }
+  #topBar { position:fixed;top:0;left:0;right:0;height:48px;background:#2c3e50;display:flex;align-items:center;padding:0 15px;gap:6px;z-index:9999 }
+  #topBar a { color:#ecf0f1;text-decoration:none;padding:6px 10px;border-radius:4px;font-size:.85rem;background:transparent;border:1px solid #7f8c8d }
+  #topBar a:hover, #topBar a.active { background:#3498db;color:white }
+  .btn-logout { color:#e74c3c!important;background:transparent!important;border-color:#e74c3c!important;margin-left:auto }
+  iframe { width:100%;height:calc(100vh - 48px);border:none }
+</style>
+</head>
+<body>
+
+<div id="topBar"></div>
+<!-- 기본페이지 G/H/I 통합 대시보드 -->
+<iframe id="mainFrame" src="g_h_i_dashboard.html"></iframe>
+
+<script src="auth.js"></script>
+<script>
+(function(){
+  var user = window.authModule.checkLogin();
+  if (!user.loggedIn) return; // 리다이렉트됨
+
+  var role = user.role;
+  var userEmp = user.emp;
+
+  var btns = window.authModule.getButtonsByRole(role);
+
+  // 현재페이지매칭 for active스타일
+  var curPage = location.pathname.split('/').pop() || '';
+
+  var barHTML = '<div style="display:flex;gap:6px">';
+  btns.forEach(function(b){
+    b.active = (b.p === curPage) ? ' class="active"' : '';
+    barHTML += '<a href="'+b.p+'"'+b.active+'>'+b.l+'</a>';
+  });
+
+  barHTML += '</div>';
+
+  // 로그인사용자정보+로그아웃버튼
+  barHTML += '<div style="display:flex;align-items:center;height:100%;margin-right:6px"><span style="color:#aaa;font-size:.75rem">';
+  barHTML += userEmp || 'EMP-001' + '</span>';
+
+  if (window.authModule.isCreatorBypass) {
+    barHTML += '<span style="color:#3498db;font-size:.7rem;margin-left:6px"> 제작자모드</span>';
+  }
+
+  barHTML += ' <a href="#" class="btn-logout" onclick="window.logout()">로그아웃</a></div>';
+
+  document.getElementById('topBar').innerHTML = barHTML;
+})();
+</script>
+</body>
+</html>
