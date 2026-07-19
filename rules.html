@@ -76,9 +76,7 @@
     <!-- ═══ 🏗️ 페이지 제작·빌드·Rebuild 규칙 (24~32) ═══ -->
     <h2>🏗️ Pages 빌드·Rebuild 규칙 (모든 페이지는 여기서 처음부터 복원 가능)</h2>
     
-    <!-- 설계도: rebuild_rules.md 기준 매핑 → /docs/pages/ · /docs/db/ · /assets/styles/ · /src/api/ -->  
     <div class="rule-card hl-info"><span class="rule-num">24</span><b>모든 페이지는 독립된 단일 HTML + CSS + JS 파일로 작성하며 재패키징 시 /public/pages/ 에 배치됨. (예: /public/pages/interface-a.html) — DB 연동은 별도 REST API (/api/v1/)로 관리.</b></div>
-    
     <div class="rule-card"><span class="rule-num">25</span><b>디자인 토큰 통일 규칙:</b> 전역 CSS 변수 --primary (인터페이스별 고정색), --border, --bg 만 사용. 색상/폰트/패딩은 이 세 가지만 직접사용하고 개별style inline 금지.</div>
     <div class="rule-card"><span class="rule-num">26</span><b>DB 필드명(contacts.*, bills.* 등) 화면에 노출 절대 불가! 모든 label/placeholder/th/td는 우리말/우리글로 치환. (규칙 14번의 KST+시간포맷과 병렬적용)</b></div>
     <div class="rule-card"><span class="rule-num">27</span><b>페이지별 파일 구조: {page}.html (본체), {page}-styles.css(스타일), {page}-api.js(API연동), {page}-data.json(초기모의데이터). 패키징 시 이 4종为一组.</b></div>
@@ -168,9 +166,22 @@
         </tbody></table>
     </div>
 
-    <div class="db-table-wrap">    <div class="db-table-wrap"><h3>⑥-A. meter_readings · 계량검침 기록 (D인터페이스 전용)</h3>
-        <table><thead><tr><th>필드명</th><th>타입</th><th>설명·매핑인
-<h3>⑥-A. meter_readings</h3></a><h3>⑥ incidents · 유지보수·사건사고</h3>
+    <div class="db-table-wrap"><h3>⑥-A. meter_readings · 계량검침 기록 (D인터페이스 전용)</h3>
+        <table><thead><tr><th>필드명</th><th>타입</th><th>설명·매핑인터페이스</th></tr></thead>
+        <tbody>
+            <tr><td>id (PK)</td><td>Integer</td><td>검침 기록 고유 번호</td></tr>
+            <tr><td>room_id (FK)</td><td>Integer→rooms.id</td><td>어느 호실의 검침인지 연결고리</td></tr>
+            <tr><td>bill_type</td><td>Varchar(50)</td><td>'전기요금', '수도요금' 등 유형 구분 (bills.bill_type과 매핑)</td></tr>
+            <tr><td>last_cumulative_reading</td><td>BigInt</td><td>지난달 최종 누적 계량값 (전월 비교용)</td></tr>
+            <tr><td>current_cumulative_reading</td><td>BigInt</td><td>이번달 실제 검침 누적값 (실제 입력 필드)</td></tr>
+            <tr><td>usage_amount</td><td>BigInt</td><td>이번달 사용량 계산 결과 (current - last)</td></tr>
+            <tr><td>billing_amount_won</td><td>BigInt (원)</td><td>확정 요금 (원단위 정수 저장, bills.amount 생성 기준)</td></tr>
+            <tr><td>billing_period_start, billing_period_end</td><td>Date</td><td>'YYYY-MM-DD' 실제 사용 기간</td></tr>
+            <tr><td>due_date</td><td>Date</td><td>납부기한 (bills.due_date와 동일 매핑)</td></tr>
+        </tbody></table>
+    </div>
+
+    <div class="db-table-wrap"><h3>⑥ incidents · 유지보수·사건사고</h3>
         <table><thead><tr><th>필드명</th><th>타입</th><th>설명·매핑인터페이스</th></tr></thead>
         <tbody>
             <tr><td>id (PK)</td><td>Integer</td><td>유지보수기록ID</td></tr>
@@ -183,10 +194,10 @@
         </tbody></table>
     </div>
 
-    <div class="db-table-wrap"><h3>⑦ users & audit_logs · 직원권한+감사로그(rollback 매핑)**</h3>
+    <div class="db-table-wrap"><h3>⑦ users & audit_logs · 직원권한+감사로그(rollback 매핑)</h3>
         <table><thead><tr><th>필드명</th><th>타입</th><th>설명·매핑인터페이스(I+G+H)</th></tr></thead>
         <tbody>
-            <tr><td>id (PK), username, real_name</td><td>Integer/Varchar/Varchar</td><td>I-직원용대시보드아이디/실명항목연계고정매핑필드</td></tr>
+            <tr><td>id (PK), employee_no, real_name</td><td>Integer/Varchar/Varchar</td><td>I-직원용대시보드사번/실명항목연계고정매핑필드</td></tr>
             <tr><td><b>role_name</b></td><td>Varchar(50)</td><td>'super_admin','office_worker','maintenance_staff' — I+G+H접속권한매핑핵심필드</td></tr>
             <tr><td>password_hash</td><td>Varchar(255)</td><td>SHA256등해시비밀번호(평문금지는17번규칙매핑)</td></tr>
         </tbody></table>
@@ -209,6 +220,7 @@
               입력: contracts.lease_type/deposit_amount/monthly_rent/<b>commission_fee(중개수수료)</b>+owner/tenant_contact_id(contacts.id매핑)<br/>
               계약서원본PDF/JPG→uploads/contracts/2025_001.pdf (상시옆에 떠있는 visible 저장)<br/>
               수정: 신규INSERT 기존is_active=0(8번규칙+시스템백업스냅샷자동저장) 매핑</div>
+        </div
         </div>
 
         <div class="iface-card" style="border-left-color:#6f42c1">
@@ -222,7 +234,7 @@
             <span class="iface-badge" style="background:#dc3545">D</span>
             <div class="iface-detail"><b>D. 공과금 검침+고지 관리:</b><br/>
               <code>&lt;h2&gt;검침등록페이지&lt;/h2&gt;</code> + <code>&lt;h2&gt;고지서발급&lt;/h2&gt;</code> 양쪽에서 동시입력.<br/>
-              DB연결고리: bills.bill_type ← meter_readings.bill_type 매핑. 요금계산은 meters → bills로 자동전환됨.</div>
+              <b>비즈니스 로직 연동:</b> 매월 검침 등록 시 <code>last_cumulative_reading</code>(전월)과 <code>current_cumulative_reading</code>(당월) 값을 대조하여 실제 사용량(<code>usage_amount</code>)이 자동 산출되며, 해당 요금 계산을 거쳐 <code>bills.amount</code> 필드로 자동 변환되어 생성·연동됩니다.</div>
         </div>
 
         <div class="iface-card" style="border-left-color:#17a2b8">
@@ -283,10 +295,14 @@
       <code>memos.writer_user_id(FK→users.id)</code> → 담당자ID / <code>memos.memo_text(Text필수)</code> → ✍️실제메모텍스트 / <code>memos.created_at(Datetime KST자동)</code> → 기록일시<br/>
       <b>UI규칙:</b> 각 ROW에 <code>&lt;input class="ledger-memo-input"&gt;</code> — onChange로 POST /api/v1/memos 자동저장. 영문필드명절대UI표시금지.</div>
 
+    <!-- ═══🔐 규칙 40 팀원관리 최종 매핑 ═══ -->
+    <h2>🔐 규칙 40 — 팀원관리 페이지 DB규칙 (team_management.html)</h2>
+    <div class="rule-card hl-success">
+        <span class="rule-num">40</span>
+        <b>J. 팀원등록 페이지 필드 동기화 규칙:</b><br/>
+        사번/고용번호 식별자는 <code>users.employee_no</code> 필드를 필수 매핑하며, 데이터 형식은 <code>Varchar(20)</code> 및 <code>'EMP-001'</code> 포맷으로 고정합니다. 기존의 이메일 계정 입력 방식은 전면 제거하며, 접속 비밀번호(<code>password_hash</code>)는 최소 길이 제약 조건인 <code>minimum_length=6</code>을 필수로 검증합니다.
+    </div>
+
 </div>
-    <h2>🔐 규칙 40 — 팀원관리 페이지 DB규칙 (team_management.html)</h2><div class="rule-card hl-success"><span class="rule-num">40</span><b>J팀원등록페이지:</b> 사번/고용번호 = users.employee_no FK·role_name(FIELDS⑦매핑). 이메일제거, 비밀번호 minimum_length=6 필수.</div>
-
-
-
 </body>
 </html>
