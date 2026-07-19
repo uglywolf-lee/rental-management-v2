@@ -29,28 +29,41 @@
 
   var btns = window.authModule.getButtonsByRole(role);
 
-  // 현재페이지매칭 for active스타일
-  var curPage = location.pathname.split('/').pop() || '';
+  // 메인 프레임 로딩 상태 추적을 위한 변수
+  var mainFrame = document.getElementById('mainFrame');
 
   var barHTML = '<div style="display:flex;gap:6px">';
   btns.forEach(function(b){
-    b.active = (b.p === curPage) ? ' class="active"' : '';
-    barHTML += '<a href="'+b.p+'"'+b.active+'>'+b.l+'</a>';
+    // 현재 iframe의 src와 페이지명이 일치하면 active 클래스를 부여
+    var isActive = mainFrame.src.indexOf(b.p) !== -1 ? ' class="active"' : '';
+    // 브라우저 주소 전체가 바뀌는 것을 막고 iframe을 제어하도록 수정
+    barHTML += '<a href="javascript:void(0)" onclick="window.loadPage(\''+b.p+'\', this)"'+isActive+'>'+b.l+'</a>';
   });
-
   barHTML += '</div>';
 
-  // 로그인사용자정보+로그아웃버튼
-  barHTML += '<div style="display:flex;align-items:center;height:100%;margin-right:6px"><span style="color:#aaa;font-size:.75rem">';
-  barHTML += userEmp || 'EMP-001' + '</span>';
+  // 로그인사용자정보+로그아웃버튼 (연산자 연산 순서 괄호 오류 완치)
+  barHTML += '<div style="display:flex;align-items:center;height:100%;margin-left:auto"><span style="color:#aaa;font-size:.75rem">';
+  barHTML += (userEmp || 'EMP-001') + '</span>';
 
   if (window.authModule.isCreatorBypass) {
-    barHTML += '<span style="color:#3498db;font-size:.7rem;margin-left:6px"> 제작자모드</span>';
+    barHTML += '<span style="color:#3498db;font-size:.7rem;margin-left:6px;font-weight:bold">🛠️ 제작자모드</span>';
   }
 
-  barHTML += ' <a href="#" class="btn-logout" onclick="window.logout()">로그아웃</a></div>';
+  barHTML += ' <a href="#" class="btn-logout" onclick="window.authModule.logout()">로그아웃</a></div>';
 
   document.getElementById('topBar').innerHTML = barHTML;
+
+  // iframe 변환 및 네비게이션 active 스타일 동적 토글 함수
+  window.loadPage = function(page, obj) {
+    mainFrame.src = page;
+    if (obj) {
+      var siblings = obj.parentNode.getElementsByTagName('a');
+      for (var i = 0; i < siblings.length; i++) {
+        siblings[i].className = '';
+      }
+      obj.className = 'active';
+    }
+  };
 })();
 </script>
 </body>

