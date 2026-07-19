@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>부동산 시스템 명세서 실시간 뷰어 (MD 연동형)</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; margin: 0; padding: 30px; background: #f4f7f6; color: #2c3e50; line-height: 1.7; }
+        .viewer-container { max-width: 1000px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.06); }
+        
+        .sync-badge { display: inline-flex; align-items: center; background: #e8f8f5; color: #1abc9c; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 20px; border: 1px solid #a3e4d7; }
+        .sync-badge::before { content: "●"; margin-right: 6px; font-size: 0.7rem; animation: blink 1.5s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+        #error-msg { display: none; background: #fadbd8; color: #78281f; padding: 15px; border-radius: 6px; border: 1px solid #f5b7b1; margin-top: 20px; font-size: 0.9rem; }
+        
+        #markdown-render h1 { font-size: 1.8rem; color: #2980b9; border-bottom: 3px solid #3498db; padding-bottom: 12px; margin-top: 0; margin-bottom: 30px; text-align: center; }
+        #markdown-render h2 { font-size: 1.3rem; color: #2c3e50; border-left: 5px solid #3498db; padding-left: 12px; margin-top: 40px; margin-bottom: 15px; }
+        #markdown-render h3 { font-size: 1.1rem; color: #34495e; margin-top: 25px; margin-bottom: 10px; background: #f2f4f4; padding: 6px 12px; border-radius: 4px; }
+        #markdown-render ul, #markdown-render ol { padding-left: 22px; margin-bottom: 15px; font-size: 0.95rem; }
+        #markdown-render li { margin-bottom: 6px; }
+        #markdown-render li strong { color: #2c3e50; }
+        
+        #markdown-render code { font-family: 'Consolas', monospace; background: #f8f9f9; padding: 2px 6px; border-radius: 4px; color: #c0392b; font-size: 0.9em; border: 1px solid #e5e8e8; }
+        
+        #markdown-render table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 25px; font-size: 0.9rem; }
+        #markdown-render th, #markdown-render td { padding: 10px 12px; border: 1px solid #eaeded; text-align: left; }
+        #markdown-render th { background-color: #34495e; color: white; font-weight: 600; }
+        #markdown-render tr:nth-child(even) td { background-color: #fff; }
+        #markdown-render tr:nth-child(odd) td { background-color: #f8f9f9; }
+        
+        #markdown-render li strong[style*="color"] { color: #c0392b !important; }
+    </style>
+</head>
+<body>
+
+<div class="viewer-container">
+    <div class="sync-badge">REAL_ESTATE_SYSTEM_SPEC.md 파일 실시간 연동 중</div>
+
+    <div id="markdown-render">
+        <p style="color: #7f8c8d; text-align: center;">명세서를 불러오는 중입니다...</p>
+    </div>
+
+    <div id="error-msg">
+        <strong>⚠️ 마크다운 파일을 로드하지 못했습니다!</strong><br>
+        1. 이 HTML 파일과 동일한 폴더에 <code>REAL_ESTATE_SYSTEM_SPEC.md</code> 파일이 존재하는지 확인해 주세요.<br>
+        2. 로컬 보안 정책(CORS)으로 인해 브라우저에서 직접 열리지 않을 경우, 로컬 서버 환경에서 열어주셔야 실시간 연동 확인이 가능합니다.
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const targetTargetMdFile = 'REAL_ESTATE_SYSTEM_SPEC.md';
+
+        fetch(targetTargetMdFile)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('네트워크 응답 오류 또는 파일 부재');
+                }
+                return response.text();
+            })
+            .then(markdownText => {
+                const renderedHtml = marked.parse(markdownText);
+                document.getElementById('markdown-render').innerHTML = renderedHtml;
+            })
+            .catch(error => {
+                console.error('Error fetching the markdown:', error);
+                document.getElementById('markdown-render').style.display = 'none';
+                document.getElementById('error-msg').style.display = 'block';
+            });
+    });
+</script>
+
+</body>
+</html>
