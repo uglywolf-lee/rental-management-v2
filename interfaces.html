@@ -83,6 +83,22 @@
 <span class="note">&rightarrow; 사내 임직원 권한 제어 및 신규 직원 등록 계정 관리 화면</span>
 </div>
 
+<!-- L. 협력사 관리 -->
+<div class="section" style="border-left-color:#e91e63">
+<h2>L. 협력사 명부 (PARTNER/ROSTER)</h2>
+<div class="item"><span class="op">입력</span><span>contacts.category='broker'|'partner' 통합 CRUD <span class="field-tag">contacts.company_or_name / representative_name / contact_info(NN-NNNN-NNNN) / documents_json</span></span></div>
+<div class="item"><span class="op">연동</span><span>contract_master.html에서 '저장된 협력사 선택' 드롭다운 → contracts.broker_id = contacts.id FK 연동. 직접입력 허용(B2B선택사항)</span></div>
+<div class="item"><span class="op">권한</span><span>super_admin: 전체 조회/수정 | office_worker: 조회/추가 | maintenance_staff: 접근불가</span></div>
+</div>
+
+<!-- K. 감사로그 -->
+<div class="section" style="border-left-color:#9c27b0; background: linear-gradient(135deg, white 70%, #f3e5f5 100%)">
+<h2 style="color:#9c27b0">★ K. 감사로그 조회 (auditlog.html)</h2>
+<div class="item"><span class="op">조회</span><span>audit_logs 테이블 변경전후 기록 <span class="field-tag">detail_log_json</span> 기반 검색 패널</span></div>
+<div class="item"><span class="op">필터</span><span>작업자 ID / 대상 테이블 / 작업종류(INSERT/UPDATE/SELECT) / 일자범위 4중 검색</span></div>
+<span class="note">&rightarrow; 모든 데이터 변경은 audit_logs에 자동으로 기록됨 (R7, R18)</span>
+</div>
+
 <div style="margin-top:20px;padding:10px;background:#e7f5ff;border-radius:4px;font-size:0.85rem;color:#004085">
 <b>💡 참고:</b> 모든 화면 UI 내부의 placeholder, 라벨, 테이블 헤더에는 영문 필드명 표기가 엄격히 제한되며 오직 우리말로 치환됩니다 (규칙 26).
 </div>

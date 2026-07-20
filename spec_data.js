@@ -109,6 +109,18 @@ window.REAL_ESTATE_SYSTEM_SPEC = `
 * ${'`'}role_name${'`'} (Varchar(50), Req, 'super_admin'|'office_worker'|'maintenance_staff')
 * ${'`'}password_hash${'`'} (Varchar(255), Req, 평문 금지, 최소 길이 6자 제약 검증 필수)
 
+### audit_logs (감사로그 - K인터페이스 전용)
+* ${'`'}id${'`'} (Integer, PK, AI)
+* ${'`'}worker_id${'`'} (Integer, FK -> users.id, Req 누구작업)
+* ${'`'}target_table${'`'} (Varchar(50), Req 대상테이블명)
+* ${'`'}action_type${'`'} (Varchar(10), Req INSERT/UPDATE/SELECT)
+* ${'`'}detail_log_json${'`'} (Text, Req 변경전후 JSON저장, R7,R18)
+* ${'`'}exec_time${'`'} (Datetime, KST자동생성)
+
+### contracts_tenants (계약-임차인 연결테이블 - many-to-many 중계)
+* ${'`'}contract_id${'`'} (Integer, FK -> contracts.id, Req)
+* ${'`'}tenant_contact_id${'`'} (Integer, FK -> contacts.id, Req 임차인FK)
+
 ## 3. INTERFACE_MAPPING
 * [A] 부동산 관리: ${'`'}buildings${'`'} & ${'`'}rooms${'`'} 등록, 주소 검색 (${'`'}LIKE${'`'}), 수정 시 R8 버전관리 적용.
 * [B] 계약서 관리: (1)임차인정보탭→contacts.company_or_name+representative_name+NN-NNNN-NNNN입력→자동INSERT,(2)계약조건탭→lease_type/deposit_amount/monthly_rent/start_date/end_date 입력,(3)문서업로드탭→신분증사본·사업자등록증사본·계약서원본 documents_json저장.모든고유번호(KFK매핑)은DB에서만연동된UI화면에는노출안됨.상시고정뷰어노출.
