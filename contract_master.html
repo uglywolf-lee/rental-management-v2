@@ -93,9 +93,8 @@
         .doc-card { border: 1px solid var(--border); border-radius: 4px; padding: 8px; background: var(--bg); }
         .doc-card-title { font-weight: 600; font-size: 0.8rem; color: #333; margin-bottom: 6px; }
 
-        /* ─── 💡 우측 패널 3단 수직 구조 스타일 정의 ─── */
-        
-        /* [1단] 우측 패널 맨 위에 단독으로 오는 3줄 크기 특약사항 프레임 */
+        /* ─── 우측 패널 3단 수직 구조 스타일 ─── */
+        /* [1단] 우측 패널 맨 위의 3줄 공간 특약사항 프레임 */
         .viewer-top-special-frame {
             padding: 12px 14px;
             background: #fff;
@@ -107,7 +106,7 @@
         .viewer-memo-label { font-size: 0.85rem; font-weight: bold; color: var(--primary); }
         textarea.viewer-memo-textarea { 
             width: 100%; 
-            height: 4.5rem; /* 3줄 영역 높이 */
+            height: 4.5rem; /* 약 3줄 정도의 공간 확보 */
             padding: 8px 12px; 
             border: 1px solid var(--border); 
             border-radius: 4px; 
@@ -118,7 +117,7 @@
         }
         textarea.viewer-memo-textarea:focus { border-color: var(--primary); }
 
-        /* [2단] 특약사항 아래, 뷰어 바로 '위'에 붙는 사본확인 제목 헤더 바 */
+        /* [2단] 특약사항 아래, 뷰어 바로 위에 붙는 사본확인 제목 헤더 바 */
         .viewer-header-mid { 
             background: #f1f3f5; 
             padding: 8px 14px; 
@@ -254,22 +253,23 @@
         </form>
     </div>
 
-    <!-- ─── 💡 우측 패널 (지시사항에 맞춰 완벽 정렬된 세로 3단 프레임 구조) ─── -->
+    <!-- ─── 우측 패널 (세로 3단 프레임 구조) ─── -->
     <div class="right-viewer-panel">
         
-        <!-- [1단] 우측 가장 위에 독립 배치된 3줄 규격의 특약사항 프레임 상자 -->
+        <!-- [1단] 우측 가장 위에 독립 배치된 특약사항 메모 공간[span_1](start_span)[span_1](end_span) -->
         <div class="viewer-top-special-frame">
             <span class="viewer-memo-label">✍️ 특약사항</span>
-            <textarea id="f_specialTerms" class="viewer-memo-textarea" placeholder="계약 관련 특약 사항 내용을 입력하세요 (3줄 규격)."></textarea>
+            <!-- 플레이스홀더 문구 교정 ("3줄 규격" 단어 삭제) -->
+            <textarea id="f_specialTerms" class="viewer-memo-textarea" placeholder="계약 관련 특약 사항 내용을 입력하세요."></textarea>
         </div>
 
-        <!-- [2단] 특약 아래이자 뷰어 바로 '위'로 내려서 배치한 사본확인 타이틀 바 -->
+        <!-- [2단] 특약 아래이자 뷰어 바로 위에 붙는 사본확인 제목 헤더 바[span_2](start_span)[span_2](end_span) -->
         <div class="viewer-header-mid">
             <h3>📄 사본확인</h3>
             <span class="viewer-badge" id="vBadge">미선택 상태</span>
         </div>
         
-        <!-- [3단] 사본확인 제목 아래에 널찍하게 펼쳐지는 계약서 사본 뷰어 몸통 -->
+        <!-- [3단] 사본확인 제목 아래의 계약서 사본 뷰어 몸통[span_3](start_span)[span_3](end_span) -->
         <div class="viewer-body-bottom" id="viewerArea">
             <div class="placeholder" id="viewerPh">신분증 사본 혹은 임대차 계약서 파일을 왼쪽에서 첨부하면<br>고해상도 실시간 렌더링 검침이 통합 시작됩니다.</div>
         </div>
