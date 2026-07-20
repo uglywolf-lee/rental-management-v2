@@ -92,6 +92,7 @@ window.REAL_ESTATE_SYSTEM_SPEC = `
 * ${'`'}description${'`'} (Text, Req)
 * ${'`'}reported_by_id${'`'} (Integer, FK -> users.id, Req)
 * ${'`'}estimated_cost${'`'} (BigInt, 수리비 추산액 -> 임차인 청구 연계 핵심 필드)
+* ${'`}reported_by_name${{'}} (Varchar(50), Req, 담당자실명 - DB저장용/실제조회UI필드)
 * ${'`'}status${'`'} (Varchar(50), Req, '접수중'|'보급완료'|'처리완료')
 
 ### memos (실무 수납 메모 - G/H/I 대시보드 규칙35 매핑)
