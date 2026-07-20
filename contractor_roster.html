@@ -5,9 +5,9 @@
     <title>계약자 인적 데이터 명부 (엑셀 통합형)</title>
     <style>
         :root { --primary: #6f42c1; --border: #dee2e6; --bg: #f8f9fa; }
-        body { font-family: 'Segoe UI', sans-serif; display: flex; height: calc(100vh - 64px); overflow: hidden; background-color: #f8f9fa; }
-        .left-panel { width: 35%; background: white; border-right: 1px solid var(--border); padding: 25px; overflow-y: auto; box-sizing: border-box; }
-        .right-panel { width: 65%; padding: 20px; display: flex; flex-direction: column; box-sizing: border-box; background: white; }
+        body { font-family: 'Segoe UI', sans-serif; display: flex; height: calc(100vh - 64px); overflow-y: auto; background-color: var(--bg); }
+        .left-panel { width: 35%; background: white; border-right: 1px solid var(--border); padding: 25px; box-sizing: border-box; }
+        .right-panel { flex: 1; padding: 20px; display: flex; flex-direction: column; box-sizing: border-box; background: white; }
         .panel-title { font-size: 1.1rem; color: var(--primary); margin: 0 0 20px 0; border-bottom: 2px solid var(--primary); padding-bottom: 8px; font-weight: bold; }
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; color: #495057; }
@@ -18,25 +18,28 @@
         .btn-sub { background: #6c757d; color: white; }
         .excel-table-wrap { flex: 1; overflow: auto; border: 1px solid #bbc4cc; margin-top: 15px; }
         table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
-        th { background: #f1f3f5; border: 1px solid #bbc4cc; padding: 6px 8px; font-weight: 600; position: sticky; top: 0; text-align: left; }
+        th { background: #f1f3f5; border: 1px solid #bbc4cc; padding: 6px 8px; font-weight: 600; position: sticky; top: 0; text-align: left; white-space: nowrap; }
         td { border: 1px solid #ced4da; padding: 6px 8px; white-space: nowrap; color: #333; }
         tr:nth-child(even) { background-color: #f8f9fa; }
         .actions-btn { background: #0d6efd; color: white; border: none; padding: 4px 12px; border-radius: 3px; cursor: pointer; font-size: 0.78rem; margin-right: 4px; }
-        .audit-log { background: #fff3cd; color: #856404; padding: 8px 12px; font-size: 0.75rem; color: #856404; border-radius: 4px; margin-top: 8px; }
     </style>
 </head>
 <body>
+    <!-- 좌측 검색 패널 -->
     <div class="left-panel">
-        <div class="panel-title">👥 계약자 검색·조회</div>
+        <div class="panel-title" style="font-size:.95rem;">👥 계약자 검색·조회</div>
         
-        <div style="background:#e6f4ea;color:#1e7e34;padding:8px 12px;border-radius:4px;margin-bottom:15px;font-size:.78rem;">
-💡 이 페이지는 이미 등록된 계약자 정보 조회 및 수정 전용 화면입니다. 신규등록은 「계약서」 입력시 자동생성됨 | **수정 시 현재 사용자·변경내용·백업이감사로그에 자동저장**
-        </div>
-
-        <form onsubmit="event.preventDefault();">
+        <form onsubmit="event.preventDefault(); searchContractor();">
+            <!-- 가장 위: 전체 문자열 검색 -->
             <div class="form-group">
-                <label>호실명</label>
-                <select class="form-control">
+                <label>전체 검색</label>
+                <input type="text" class="form-control" id="globalSearchInput" placeholder="이름·전화·호실·상호명 모두 검색">
+            </div>
+
+            <!-- 아래: 상세 필터 -->
+            <div class="form-group">
+                <label>호실</label>
+                <select class="form-control" id="roomFilter">
                     <option value="">전체 호실</option>
                     <option value="A201">A동 201호</option>
                     <option value="A202">A동 202호</option>
@@ -47,48 +50,71 @@
 
             <div class="form-group">
                 <label>입금 대기 계약 기간 (선택사항)</label>
-                <input type="date" class="form-control"> ~ 
-                <input type="date" class="form-control">
+                <input type="date" class="form-control" style="display:inline;width:45%;"> 내 ~ 
+                <input type="date" class="form-control" style="display:inline;width:45%; margin-left:10px;"> 외
             </div>
 
-            <div class="form-group">
+            <div class="form-group" style="display:none;" id="nameFilterGroup">
                 <label>상호명 또는 성명</label>
                 <input type="text" class="form-control" placeholder="계약자 상호이름 or 성명 입력">
             </div>
 
-            <div class="form-group">
+            <div class="form-group" style="display:none;" id="idFilterGroup">
                 <label>식별번호 (사업자/주민번호 앞자리)</label>
                 <input type="text" class="form-control" placeholder="예: 123-45-67890">
             </div>
             
             <div class="btn-box">
-                <button type="submit" class="btn btn-main" style="flex:1;">계약자 조회</button>
+                <button type="submit" class="btn btn-main" style="flex:1;">계약자 전체검색</button>
             </div>
         </form>
     </div>
 
-    <!-- 우측: 이미 등록된 계약자 데이터 수정 패널 -->
+    <!-- 우측: 등록목록 테이블 -->
     <div class="right-panel">
-        <div class="panel-title">📋 등록된 계약자 명부 (조회/수정)</div>
+        <div class="panel-title" style="font-size:.95rem;">📋 등록된 계약자 명부 (조회/수정)</div>
         
         <div class="excel-table-wrap">
             <table>
                 <thead>
                     <tr>
-                        <th style="width:50px">번호</th><th style="width:80px">호실</th><th>계약자 상호/성명</th><th>식별번호</th><th>연락처</th><th style="width:90px">계약시작일</th><th style="width:90px">계약종료일</th><th>계약서FK</th><th style="width:60px">관리</th>
+                        <th style="width:50px">번호</th>
+                        <th style="width:80px">호실</th>
+                        <th style="width:160px">계약자 상호/성명</th>
+                        <th style="width:120px">전화번호</th>
+                        <th style="width:90px">계약시작일</th>
+                        <th style="width:90px">계약종료일</th>
+                        <th style="width:80px">계약서파일</th>
+                        <th style="width:60px">관리</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>99</td><td>C동102호</td><td>(주)네트웍스 파트너스</td><td>124-81-00000</td><td>010-1234-5678</td><td style="text-align:center;">2025-01-15</td><td style="text-align:center;">2025-12-31</td><td>C2025****</td>
-                        <td style="text-align:center;">
-                            <button class="actions-btn" onclick="editContractor(99)">수정</button>
-                        </td>
+                        <td>99</td><td>C동102호</td><td>(주)네트웍스 파트너스</td><td>010-1234-5678</td><td style="text-align:center;">2025-01-15</td><td style="text-align:center;">2025-12-31</td>
+                        <td style="text-align:center;'><a href="#" class="actions-btn" style="background:#28a745;text-decoration:none;display:inline-block;text-align:center;padding:4px 8px;background-color:#28a745;font-size:.72rem;color:white;">계약서파일보기</a></td>
+                        <td style="text-align:center;"><button class="actions-btn" onclick="editContractor(99)">수정</button></td>
                     </tr>
                 </tbody>
             </table>
         </div>
-
     </div>
+
+    <script>
+        function showTab(tabId, btnObj) {
+            document.querySelectorAll('.tab-body').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function searchContractor() {
+            const query = document.getElementById('globalSearchInput').value.trim().toLowerCase();
+            const tbody = document.querySelector('tbody tr');
+            // 전체검색 시 이름을 포함한 모든 필드가 query를 포함하면 노출
+            alert(`'${query}' 검색 실행. (API 연동 예정)`);
+        }
+
+        function editContractor(id) {
+            alert(`${id} 계약자 수정 모드입니다.`);
+        }
+    </script>
 </body>
 </html>

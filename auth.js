@@ -61,7 +61,8 @@
       {c:'F', l:'유지보수',    p:'incidents_maintenance.html'},
       {c:'GHI', l:'통합대시보드', p:'g_h_i_dashboard.html'},
       {c:'K', l:'감사로그',     p:'auditlog.html'},
-      {c:'J', l:'팀원관리',   p:'team_management.html'}
+      {c:'J', l:'팀원관리',  p:'team_management.html'},
+      {c:'L', l:'협력사',     p:'partner_roster.html'}
     ];
 
     var perm = {
