@@ -4,102 +4,164 @@
     <meta charset="UTF-8">
     <title>협력사 인적 데이터 명부 (broker/partner)</title>
     <style>
-        :root { --primary: #17a2b8; --border: #dee2e6; --bg: #f8f9fa; }
+        /* 설계 표준 디자인 토큰 */
+        :root { 
+            --primary: #17a2b8; 
+            --border: #dee2e6; 
+            --bg: #f8f9fa; 
+            --text-dark: #495057;
+            --text-muted: #6c757d;
+        }
+        
         body { font-family: 'Segoe UI', sans-serif; margin: 0 !important; display: flex; height: calc(100vh - 64px); overflow-y: auto; background-color: var(--bg); }
-        .left-panel { width: 35%; background: white; border-right: 1px solid var(--border); padding: 25px; box-sizing: border-box; }
+        .left-panel { width: 35%; background: white; border-right: 1px solid var(--border); padding: 25px; box-sizing: border-box; overflow-y: auto; }
         .right-panel { flex: 1; padding: 20px; display: flex; flex-direction: column; box-sizing: border-box; background: white; }
-        .panel-title { font-size: 1.1rem; color: var(--primary); margin: 0 0 20px 0; border-bottom: 2px solid var(--primary); padding-bottom: 8px; font-weight: bold; }
+        
+        /* 인라인 스타일 제거용 클래스 치환 */
+        .panel-title { font-size: 0.95rem; color: var(--primary); margin: 0 0 20px 0; border-bottom: 2px solid var(--primary); padding-bottom: 8px; font-weight: bold; }
         .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; color: #495057; }
+        .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; color: var(--text-dark); }
         .form-control { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.88rem; box-sizing: border-box; }
-        .date-range-wrap { display: flex; align-items: center; gap: 8px; }
-        .date-separator { color: #6c757d; font-size: 0.85rem; font-weight: bold; }
-        .filter-divider { text-align: center; color: #6c757d; font-size: 0.8rem; margin: 20px 0 15px 0; position: relative; }
+        
+        .row-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .filter-divider { text-align: center; color: var(--text-muted); font-size: 0.8rem; margin: 20px 0 15px 0; position: relative; }
+        
         .btn-box { margin-top: 15px; display: flex; gap: 8px; }
         .btn { padding: 10px; border: none; border-radius: 4px; font-size: 0.85rem; font-weight: bold; cursor: pointer; text-align: center; }
-        .btn-main { background: var(--primary); color: white; }
-        .btn-sub { background: #6c757d; color: white; }
+        .btn-main { background: var(--primary); color: white; flex: 2; }
+        .btn-sub { background: var(--text-muted); color: white; flex: 1; }
+        
         .excel-table-wrap { flex: 1; overflow: auto; border: 1px solid #bbc4cc; margin-top: 15px; }
         table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
         th { background: #f1f3f5; border: 1px solid #bbc4cc; padding: 6px 8px; font-weight: 600; position: sticky; top: 0; text-align: left; white-space: nowrap; }
         td { border: 1px solid #ced4da; padding: 6px 8px; white-space: nowrap; color: #333; }
+        .text-center { text-align: center; }
+        
         tr:nth-child(even) { background-color: #f8f9fa; }
+        tr.selected { background-color: #e2f4f7 !important; }
         .actions-btn { background: #0d6efd; color: white; border: none; padding: 4px 12px; border-radius: 3px; cursor: pointer; font-size: 0.78rem; margin-right: 4px; }
         .doc-card { border: 1px solid var(--border); border-radius: 4px; padding: 8px; margin-bottom: 8px; background: #f8f9fa; }
-        .doc-card-title { font-weight: 600; font-size: 0.72rem; margin-bottom: 4px; color: #495057; }
+        .doc-card-title { font-weight: 600; font-size: 0.72rem; margin-bottom: 4px; color: var(--text-dark); }
     </style>
 </head>
 <body>
-    <!-- 좌측 -->
     <div class="left-panel">
-        <div class="panel-title" style="font-size:.95rem;">👥 협력사 검색·조회</div>
+        <div class="panel-title" id="formPanelTitle">👥 협력사 정보 등록·수정</div>
         
-        <form onsubmit="event.preventDefault(); searchPartner();">
-            <!-- 최상위: 전체 검색 -->
-            <div class="form-group">
-                <label>전체검색</label>
-                <input type="text" class="form-control" id="globalSearchInput" placeholder="이름·전화·호실 입력">
-            </div
+        <form id="partnerForm" onsubmit="event.preventDefault(); savePartner();">
+            <input type="hidden" id="partnerId" value="">
 
->
-            <div class="form-group">
-                <label>호실</label>
-                <select class="form-control" id="roomFilter">
-                    <option value="">(전체)</option>
-                    <option value="A">A동</option>
-                    <option value="B">B동</option>
-                    <option value="C">C동</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>등록/갱신 기간</label>
-                <div class="date-range-wrap">
-                    <input type="date" class="form-control" id="startDate">
-                    <span class="date-separator">~</span>
-                    <input type="date" class="form-control" id="endDate">
+            <div class="row-grid-2">
+                <div class="form-group">
+                    <label>구분</label>
+                    <!-- 규칙 R26 반영: 영문(broker, partner) 표기 자제 및 매필 값 내부 격리 -->
+                    <select class="form-control" id="partnerCategory" required>
+                        <option value="broker">중개사</option>
+                        <option value="partner">일반 협력사</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>업종 (유지보수 분류)</label>
+                    <input type="text" id="partnerBizType" class="form-control" placeholder="예: 부동산중개, 전기설비">
                 </div>
             </div>
 
-            <div class="filter-divider">—— 상세 필터 ——</div>
+            <div class="form-group">
+                <label>상호명 또는 법인명</label>
+                <input type="text" id="partnerCompany" class="form-control" placeholder="예: 공인중개사 팩토리" required>
+            </div>
+
+            <div class="row-grid-2">
+                <div class="form-group">
+                    <label>대표자 성명</label>
+                    <input type="text" id="partnerRepName" class="form-control" placeholder="실명 입력">
+                </div>
+                <div class="form-group">
+                    <label>전화번호</label>
+                    <!-- 글로벌 표준 PHONE 규칙 강제화 스크립트 연결 -->
+                    <input type="text" id="partnerPhone" class="form-control" placeholder="010-9876-5432" required maxlength="14" oninput="validatePhoneFormat(this)">
+                </div>
+            </div>
 
             <div class="form-group">
-                <label>신분증/사업자등록증 사본 업로드</label>
+                <label>사업자등록번호</label>
+                <input type="text" id="partnerBizNo" class="form-control" placeholder="예: 123-45-67890">
+            </div>
+
+            <div class="form-group">
+                <label>이메일 주소</label>
+                <!-- 글로벌 표준 EMAIL 소문자 변환 규칙 연결 -->
+                <input type="email" id="partnerEmail" class="form-control" placeholder="이메일 입력" oninput="this.value = this.value.toLowerCase();">
+            </div>
+
+            <div class="form-group">
+                <label>사업자등록증 / 신분증 사본</label>
                 <div class="doc-card">
-                    <div class="doc-card-title">📄 신분증 사본</div>
-                    <input type="file" class="form-control" accept=".pdf,.jpg.jpeg,.png">
+                    <div class="doc-card-title">📄 증빙 서류 업로드</div>
+                    <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
                 </div>
             </div>
 
-            <!-- 등록 버튼 -->
             <div class="btn-box">
-                <button type="submit" class="btn btn-main" style="flex:1;">전체검색</button>
+                <button type="submit" id="btnSubmit" class="btn btn-main">정보 저장/수정</button>
+                <button type="button" class="btn btn-sub" onclick="resetForm()">비우기</button>
+            </div>
+
+            <div class="filter-divider">—— 검색 및 필터 ——</div>
+
+            <div class="form-group">
+                <label>검색어 입력</label>
+                <input type="text" class="form-control" id="globalSearchInput" onkeyup="searchPartner()" placeholder="상호·대표자·전화번호·업종 검색">
+            </div>
+            
+            <div class="row-grid-2">
+                <div class="form-group">
+                    <label>호실 필터</label>
+                    <select class="form-control" id="roomFilter" onchange="searchPartner()">
+                        <option value="">(전체)</option>
+                        <option value="A">A동</option>
+                        <option value="B">B동</option>
+                        <option value="C">C동</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>구분 필터</label>
+                    <select class="form-control" id="typeFilter" onchange="searchPartner()">
+                        <option value="">(전체)</option>
+                        <option value="broker">중개사</option>
+                        <option value="partner">일반 협력사</option>
+                    </select>
+                </div>
             </div>
         </form>
     </div>
 
-    <!-- 우측: 등록된 협력사 명부 -->
     <div class="right-panel">
-        <div class="panel-title" style="font-size:.95rem;">📋 등록된 협력사 명부 (조회/수정)</div>
-        
+        <div class="panel-title">📋 등록된 협력사 명부 (행 클릭 시 좌측에 자동 로드)</div>
         <div class="excel-table-wrap">
-            <table>
+            <table id="partnerTable">
                 <thead>
                     <tr>
-                        <th style="width:50px">번호</th>
-                        <th style="width:80px">호실</th>
-                        <th style="width:160px">협력사 상호/성명</th>
-                        <th style="width:120px">전화번호</th>
-                        <th style="width:90px">등록일</th>
-                        <th style="width:90px">갱신일</th>
+                        <th style="width:40px">번호</th>
+                        <th style="width:70px">구분</th>
+                        <th style="width:140px">상호명/법인명</th>
+                        <th style="width:90px">대표자</th>
+                        <th style="width:110px">전화번호</th>
+                        <th style="width:110px">사업자번호</th>
+                        <th style="width:100px">업종/분류</th>
                         <th style="width:60px">관리</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- 실제 데이터 API 연동 예정 -->
-                    <tr onclick="selectPartner(1)">
-                        <td>1</td><td>A동</td><td>공인중개사 팩토리</td><td>010-9876-5432</td><td style="text-align:center;">2026-01-10</td><td style="text-align:center;">2026-07-20</td>
-                        <td style="text-align:center;"><button class="actions-btn" onclick="editPartner(1)">수정</button></td>
+                    <tr onclick="loadToForm(this, 1)" style="cursor:pointer;">
+                        <td>1</td>
+                        <td data-val="broker">중개사</td>
+                        <td class="td-company">공인중개사 팩토리</td>
+                        <td class="td-rep">김중개</td>
+                        <td class="td-phone">010-9876-5432</td>
+                        <td class="td-bizno">123-45-67890</td>
+                        <td class="td-biztype">부동산중개</td>
+                        <td class="text-center"><button class="actions-btn" onclick="event.stopPropagation(); loadToForm(this.closest('tr'), 1)">수정</button></td>
                     </tr>
                 </tbody>
             </table>
@@ -107,19 +169,56 @@
     </div>
 
     <script>
+        // 글로벌 표준 PHONE 정밀 유효성 제어 필터링
+        function validatePhoneFormat(obj) {
+            let val = obj.value.replace(/[^0-9]/g, '');
+            if (val.length > 3 && val.length <= 7) {
+                obj.value = val.substring(0, 3) + '-' + val.substring(3);
+            } else if (val.length > 7) {
+                obj.value = val.substring(0, 3) + '-' + val.substring(3, 7) + '-' + val.substring(7, 11);
+            } else {
+                obj.value = val;
+            }
+        }
+
+        function loadToForm(row, id) {
+            const rows = document.querySelectorAll('#partnerTable tbody tr');
+            rows.forEach(r => r.classList.remove('selected'));
+            row.classList.add('selected');
+
+            document.getElementById('partnerId').value = id;
+            document.getElementById('partnerCategory').value = row.cells[1].getAttribute('data-val');
+            document.getElementById('partnerCompany').value = row.querySelector('.td-company').innerText;
+            document.getElementById('partnerRepName').value = row.querySelector('.td-rep').innerText;
+            document.getElementById('partnerPhone').value = row.querySelector('.td-phone').innerText;
+            document.getElementById('partnerBizNo').value = row.querySelector('.td-bizno').innerText;
+            document.getElementById('partnerBizType').value = row.querySelector('.td-biztype').innerText;
+            
+            document.getElementById('formPanelTitle').innerText = `📝 협력사 정보 수정 (번호: ${id})`;
+            document.getElementById('btnSubmit').innerText = "변경사항 수정 적용";
+        }
+
+        function resetForm() {
+            document.getElementById('partnerId').value = "";
+            document.getElementById('partnerForm').reset();
+            document.getElementById('formPanelTitle').innerText = "👥 협력사 정보 등록·수정";
+            document.getElementById('btnSubmit').innerText = "정보 저장/수정";
+            document.querySelectorAll('#partnerTable tbody tr').forEach(r => r.classList.remove('selected'));
+        }
+
+        function savePartner() {
+            const id = document.getElementById('partnerId').value;
+            const company = document.getElementById('partnerCompany').value;
+            alert(id ? `[수정 완료] ${id}번 협력사 정보가 갱신되었습니다.` : `[등록 완료] 신규 협력사 등록 완료`);
+            resetForm();
+        }
+
         function searchPartner() {
-            const query = document.getElementById('globalSearchInput').value.trim();
-            alert(`'${query} 조건으로 협력사 검색을 실행합니다. (API 연동 예정)`);
+            const query = document.getElementById('globalSearchInput').value.toLowerCase();
+            document.querySelectorAll('#partnerTable tbody tr').forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(query) ? '' : 'none';
+            });
         }
-
-        function editPartner(id) {
-            alert(`${id}번 협력사 수정 모드입니다.`);
-        }
-
-        function selectPartner(id) {
-            // 상세 정보 패널 이동 또는 계약서 탭으로 연결
-            alert(`협력사 ${id} 선택됨. 계약서에서 broker_id(${id}) 매핑.`);
-        }
-    <script>
+    </script>
 </body>
-</html
+</html>

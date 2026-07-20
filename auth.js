@@ -5,7 +5,6 @@
     validRoles: ['super_admin','office_worker','maintenance_staff']
   };
 
-  // URL 검색어 또는 세션 스토리지 플래그를 결합 검증하여 무력화 우회 판정
   // URL 검색어 및 세션 스토리지 플래그를 결합 검증하여 무력화 우회 판정
   var url_bypass = location.search.indexOf(CFG.secretKey) !== -1;
   var storage_bypass = sessionStorage.getItem('creatorBypass') === 'true';
@@ -17,6 +16,7 @@
       sessionStorage.setItem('loginOk', 'true');
       sessionStorage.setItem('userRole', 'super_admin');
       sessionStorage.setItem('userEmp', 'MASTER-ROOT');
+      sessionStorage.setItem('creatorBypass', 'true'); // 다음 페이지 이동 시에도 유지되도록 저장
       sessionStorage.setItem('_sess', Date.now());
       return true;
     }
@@ -62,12 +62,13 @@
       {c:'GHI', l:'통합대시보드', p:'g_h_i_dashboard.html'},
       {c:'K', l:'감사로그',     p:'auditlog.html'},
       {c:'J', l:'팀원관리',  p:'team_management.html'},
-      {c:'L', l:'협력사',     p:'partner_roster.html'}
+      {c:'L', l:'협력사',     p:'partner_roster.html'} // 코드 'L' 정의부
     ];
 
+    // 각 권한 그룹에 협력사 메뉴('L')를 바인딩하여 정상 출력되도록 수정
     var perm = {
-      super_admin:     ['A','B','C','D','E','F','GHI','K','J'],
-      office_worker:   ['A','B','C','E','GHI'],
+      super_admin:     ['A','B','C','D','E','F','GHI','K','J','L'], // 'L' 추가
+      office_worker:   ['A','B','C','E','GHI','L'],                 // 'L' 추가
       maintenance_staff:['D','F','GHI']
     };
 

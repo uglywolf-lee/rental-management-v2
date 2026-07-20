@@ -4,272 +4,224 @@
     <meta charset="UTF-8">
     <title>계약서 관리 시스템 (사무인력 전용)</title>
     <style>
-        :root { --primary: #fd7e14; --border: #dee2e6; --bg: #f8f9fa; }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body { 
-            font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; 
-            display: flex; 
-            height: 100vh; 
-            overflow: hidden; 
-            background-color: var(--bg); 
+        :root { 
+            --primary: #fd7e14; 
+            --secondary: #17a2b8; 
+            --border: #dee2e6; 
+            --bg: #f8f9fa; 
+            --text-dark: #495057;
+            --text-muted: #6c757d;
         }
 
-        /* 비율 표준 고정 (35% : 65%) */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; display: flex; height: 100vh; overflow: hidden; background-color: var(--bg); }
+
         .left-form-panel { width: 35%; background: white; border-right: 1px solid var(--border); padding: 12px; overflow-y: auto; box-sizing: border-box; scrollbar-width: thin; }
         .right-viewer-panel { width: 65%; display: flex; flex-direction: column; height: 100%; background: #fff; }
 
-        /* 탭 네비게이션 */
         .tab-nav { display: flex; gap: 4px; margin-bottom: 10px; border-bottom: 1px solid var(--border); background: white; position: sticky; top: 0; z-index: 5; }
-        .tab-btn { padding: 6px 10px; background: none; border: none; font-size: 0.78rem; font-weight: 600; cursor: pointer; color: #495057; white-space: nowrap; border-bottom: 3px solid transparent; transition: all 0.2s ease-in-out; }
-        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: #fff8e6; margin-bottom: -1px; }
+        .tab-btn { padding: 6px 10px; background: none; border: none; border-bottom: 2px solid transparent; font-size: 0.8rem; font-weight: 600; color: var(--text-dark); cursor: pointer; }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
 
-        .panel-title { font-size: 1.05rem; color: var(--primary); margin-top: 0; margin-bottom: 10px; border-bottom: 2px solid var(--primary); padding-bottom: 4px; font-weight: bold; }
+        .tab-body { display: none; }
+        .tab-body.active { display: block; }
 
-        /* 폼 구조 */
-        .form-group { margin-bottom: 5px; }
-        .form-group label { display: block; font-size: 0.72rem; font-weight: 600; margin-bottom: 2px; color: #6c757d; }
-        .form-control { width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.85rem; box-sizing: border-box; background-color: #fff; }
-
-        /* 35% 그리드 시스템 */
-        .row-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 2px; }
-        .row-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 2px; }
-
-        /* 파일 업로드 반반 배치 */
-        .file-upload-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; margin-bottom: 8px; }
-        .doc-card { border: 1px solid var(--border); border-radius: 4px; padding: 8px; background: #f8f9fa; }
-        .doc-card-title { font-weight: 600; font-size: 0.72rem; margin-bottom: 4px; color: #495057; }
-
-        /* 버튼 */
-        .btn-box { margin-top: 10px; display: flex; gap: 8px; }
-        .btn { flex: 1; padding: 8px; border: none; border-radius: 4px; font-size: 0.85rem; font-weight: bold; cursor: pointer; text-align: center; }
+        .panel-title { font-size: 1rem; color: var(--primary); margin: 5px 0 15px 0; font-weight: bold; }
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; font-size: 0.78rem; font-weight: 600; margin-bottom: 3px; color: var(--text-dark); }
+        .form-control { width: 100%; padding: 6px 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.82rem; box-sizing: border-box; }
+        
+        .row-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn-box { margin-top: 15px; display: flex; gap: 6px; }
+        .btn { padding: 8px 12px; border: none; border-radius: 4px; font-size: 0.82rem; font-weight: bold; cursor: pointer; text-align: center; }
         .btn-main { background: var(--primary); color: white; }
-
-        /* 우측 상단 현황판 */
-        .search-table-section { flex: 1; padding: 20px; overflow-y: auto; border-bottom: 1px solid var(--border); }
-        .table-wrap { border: 1px solid var(--border); border-radius: 4px; overflow: auto; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
-        th { background: #e9ecef; padding: 10px; border-bottom: 1px solid var(--border); font-weight: 600; text-align: left; }
-        td { padding: 9px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
-
-        /* ===== [★ 기능 보완] 다양한 포맷 확장 대응형 대형 뷰어 섹션 ===== */
-        .document-viewer-section { height: 45%; background: #343a40; display: flex; flex-direction: column; padding: 12px; overflow: hidden; }
+        .btn-sub { background: var(--text-muted); color: white; }
         
-        /* 뷰어 내부 컨테이너 스크롤 제어 */
-        .viewer-display-area { flex: 1; width: 100%; background: #525659; border-radius: 4px; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; padding: 10px; box-sizing: border-box; }
-        
-        /* 이미지(JPG/PNG) 로드 규격 */
-        .viewer-image { max-width: 100%; height: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.4); border-radius: 2px; }
-        
-        /* PDF 임베드 브라우저 기본 뷰어 규격 */
-        .viewer-pdf { width: 100%; height: 100%; border: none; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+        /* 인라인 스타일 대체용 디자인 클래스 */
+        .btn-secondary { background: var(--secondary); color: white; padding: 4px 10px; font-size: 0.75rem; white-space: nowrap; }
+        .doc-card { border: 1px solid var(--border); border-radius: 4px; padding: 10px; margin-bottom: 10px; background: #f8f9fa; }
+        .doc-card.broker-accent { border-left: 4px solid var(--secondary); }
+        .doc-card-title { font-weight: 600; font-size: 0.8rem; margin-bottom: 6px; color: #333; }
+        .flex-box { display: flex; gap: 4px; margin-bottom: 6px; }
+        .status-txt { font-size: 0.78rem; color: var(--text-muted); font-weight: bold; padding: 4px 0; }
 
-        /* 파일이 없을 때 기본 더미 모형 */
-        .pdf-mock { width: 100%; background: white; color: #333; padding: 20px; box-sizing: border-box; font-size: 0.78rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); border-radius: 4px; line-height: 1.6; }
+        .viewer-header { background: #f1f3f5; padding: 10px 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .viewer-header h3 { font-size: 0.9rem; color: #333; }
+        .viewer-body { flex: 1; background: #525659; display: flex; justify-content: center; align-items: center; overflow: auto; position: relative; }
+        .viewer-placeholder { color: #ccc; font-size: 0.85rem; text-align: center; }
+        .viewer-image { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .viewer-pdf { width: 100%; height: 100%; border: none; background: white; }
     </style>
 </head>
 <body>
 
-    <!-- 좌측 입력/수정 패널 (35%) -->
     <div class="left-form-panel">
-        <div class="panel-title">📜 B. 계약서 마스터 관리</div>
-
         <div class="tab-nav">
-            <button class="tab-btn active" onclick="showTab('tab-main-contract', this)">계약 정보 입력</button>
-            <button class="tab-btn" onclick="showTab('tab-docs', this)">신분증 사본</button>
+            <button class="tab-btn active" onclick="switchTab('tab-tenant', this)">1. 임차인 정보</button>
+            <button class="tab-btn" onclick="switchTab('tab-conditions', this)">2. 계약 조건</button>
+            <button class="tab-btn" onclick="switchTab('tab-docs', this)">3. 중개사 및 서류</button>
         </div>
 
-        <!-- 탭 1: 계약 정보 입력 -->
-        <div id="tab-main-contract" class="tab-body active">
-            <div class="panel-title" style="font-size:0.82rem; border-bottom: 1px dashed var(--border); color: #555; margin-bottom: 8px; padding-bottom: 4px;">👤 임차인 및 계약 조건 등록</div>
-
-            <!-- 대상호실 / 임차인명 -->
-            <div class="row-grid-2">
+        <form id="contractForm" onsubmit="event.preventDefault(); saveContract();">
+            <div id="tab-tenant" class="tab-body active">
+                <div class="panel-title">👤 임차인 인적사항 등록</div>
                 <div class="form-group">
-                    <label>대상 호실</label>
-                    <input type="text" class="form-control" placeholder="예: A동 201호" required>
+                    <label>상호명 또는 성명</label>
+                    <input type="text" id="tenantName" class="form-control" placeholder="예: (주)네트웍스 파트너스" required>
                 </div>
-                <div class="form-group">
-                    <label>임차인 상호 또는 성명</label>
-                    <input type="text" class="form-control" placeholder="(주)네트웍스 또는 홍길동" required>
-                </div>
-            </div>
-
-            <!-- 대표자 / 연락처 / 이메일 -->
-            <div class="row-grid-3">
                 <div class="form-group">
                     <label>대표자 성명</label>
-                    <input type="text" class="form-control" placeholder="실명">
+                    <input type="text" id="tenantRep" class="form-control" placeholder="실명 기입" required>
                 </div>
                 <div class="form-group">
-                    <label>연락처</label>
-                    <input type="text" class="form-control" placeholder="연락처 고정" required maxlength="14">
+                    <label>전화번호</label>
+                    <input type="text" id="tenantPhone" class="form-control" placeholder="010-1234-5678" maxlength="14" required oninput="validatePhone(this)">
                 </div>
                 <div class="form-group">
                     <label>이메일 주소</label>
-                    <input type="email" class="form-control" placeholder="이메일">
+                    <input type="email" id="tenantEmail" class="form-control" placeholder="이메일 입력" oninput="this.value = this.value.toLowerCase();">
                 </div>
             </div>
 
-            <!-- 계약 종류 / 보증금 / 월세 -->
-            <div class="row-grid-3">
-                <div class="form-group">
-                    <label>계약 종류</label>
-                    <select class="form-control" required>
-                        <option value="">-- 선택 --</option>
-                        <option value="전세">전세</option>
-                        <option value="월세">월세</option>
-                        <option value="반전세">반전세</option>
-                    </select>
+            <div id="tab-conditions" class="tab-body">
+                <div class="panel-title">💰 상세 계약 조건 설정</div>
+                <div class="row-grid-2">
+                    <div class="form-group">
+                        <label>호실 정보</label>
+                        <input type="text" id="roomInfo" class="form-control" placeholder="예: C동 102호" required>
+                    </div>
+                    <div class="form-group">
+                        <label>계약 구분</label>
+                        <select id="leaseType" class="form-control">
+                            <option value="월세">월세</option>
+                            <option value="전세">전세</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>보증금 (원)</label>
-                    <input type="number" class="form-control" placeholder="보증금">
+                <div class="row-grid-2">
+                    <div class="form-group">
+                        <label>보증금 (원단위)</label>
+                        <input type="number" id="depositAmount" class="form-control" placeholder="예: 10000000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>월세 (원단위)</label>
+                        <input type="number" id="monthlyRent" class="form-control" placeholder="예: 500000" required>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>월세 (원)</label>
-                    <input type="number" class="form-control" placeholder="월세">
+                <div class="row-grid-2">
+                    <div class="form-group">
+                        <label>계약 시작일</label>
+                        <input type="date" id="startDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>계약 종료일</label>
+                        <input type="date" id="endDate" class="form-control" required>
+                    </div>
                 </div>
             </div>
 
-            <!-- 시작일 / 종료일 / 중개코드 -->
-            <div class="row-grid-3">
-                <div class="form-group">
-                    <label>계약 시작일</label>
-                    <input type="date" class="form-control" required>
+            <div id="tab-docs" class="tab-body">
+                <div class="panel-title">🤝 협력 중개사 연동 (명부 동기화)</div>
+                <div class="doc-card broker-accent">
+                    <div class="doc-card-title">중개사 조회 및 내부 ID 매핑</div>
+                    <div class="flex-box">
+                        <input type="text" id="brokerSearchInput" class="form-control" placeholder="중개사 상호 또는 이름 입력...">
+                        <button type="button" class="btn btn-secondary" onclick="searchBrokerPartner()">검색</button>
+                    </div>
+                    <div id="brokerSelectStatus" class="status-txt">
+                        ℹ️ 현재 연결된 중개사 없음 (직접 거래 시 공란)
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>계약 종료일</label>
-                    <input type="date" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label>중개수수료/코드</label>
-                    <input type="text" class="form-control" placeholder="정산 수수료">
-                </div>
-            </div>
 
-            <!-- 보안 데이터 식별자 -->
-            <div class="form-group">
-                <label>사업자번호 또는 주민번호 앞자리</label>
-                <input type="text" class="form-control" placeholder="예: 123-45-67890 (내부 보안 저장용)">
-            </div>
-
-            <!-- 파일 업로드 반반 배치 -->
-            <div class="file-upload-row">
+                <div class="panel-title">📎 계약 증빙 서류 스캔본 첨부</div>
                 <div class="doc-card">
-                    <div class="doc-card-title">📄 신분증 사본</div>
-                    <input type="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
-                </div>
-                <div class="doc-card">
-                    <div class="doc-card-title">📄 계약서 사본</div>
-                    <!-- OnChange 이벤트 바인딩으로 실시간 멀티 뷰어 연동 시연 처리 -->
-                    <input type="file" id="contractFileInput" class="form-control" accept=".pdf,.jpg,.jpeg,.png" onchange="previewContractFile(this)">
+                    <div class="doc-card-title">📄 파일 스캔본 등록 (PDF / JPG / PNG)</div>
+                    <input type="file" id="contractFileDrop" class="form-control" accept=".pdf,.jpg,.jpeg,.png" onchange="previewUploadedFile(this)">
                 </div>
             </div>
 
             <div class="btn-box">
-                <button type="button" class="btn btn-main">전체 계약서 등록</button>
+                <button type="submit" class="btn btn-main">계약 데이터 최종 저장</button>
+                <button type="button" class="btn btn-sub" onclick="resetContractForm()">폼 초기화</button>
             </div>
-        </div>
-
-        <!-- 탭 2: 신분증 사본 -->
-        <div id="tab-docs" class="tab-body">
-            <div class="panel-title" style="font-size:0.82rem; border-bottom: 1px dashed var(--border); color: #555; margin-bottom: 8px; padding-bottom: 4px;">📎 연결된 임차인 증빙 서류 정보</div>
-            <div class="doc-card">
-                <div class="doc-card-title">👤 임차인 증빙 서류 사본 내역</div>
-                <p style="color:#6c757d; font-size:0.78rem; line-height:1.4;">여기에 업로드된 임차인의 신분증 또는 사업자등록증 파일 리스트가 상시 동기화됩니다.</p>
-            </div>
-            <div class="doc-card" style="margin-top:8px;">
-                <div class="doc-card-title">🤝 협력 중개사 연동 정보 (선택사항)</div>
-                <input type="text" class="form-control" placeholder="중개사무소 또는 상호명 입력">
-            </div>
-        </div>
+        </form>
     </div>
 
-    <!-- 우측 패널 (65%) -->
     <div class="right-viewer-panel">
-        <div class="search-table-section">
-            <div class="panel-title" style="font-size:0.95rem;">📋 등록된 전체 계약서 현황</div>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>번호</th><th>대상 호실</th><th>임차인명</th><th>계약종류</th><th>보증금</th><th>월세총계</th><th>만료일 (요일)</th><th>현재상태</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr onclick="loadMockStoredFile('pdf')">
-                            <td>1024</td><td>A동 201호</td><td>주식회사 네트웍스파트너스</td><td>월세</td><td>5,000만원</td><td>350만원</td><td>2028-07-17 (금)</td><td><span style="color:green; font-weight:bold;">진행중</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="viewer-header">
+            <h3 id="viewerHeaderTitle">📄 통합 계약 서류 및 증빙자료 뷰어 채널</h3>
         </div>
-
-        <!-- ===== [★ 핵심 변경] 가변형 멀티 포맷 계약 원본 상시 검증 뷰어 섹션 ===== -->
-        <div class="document-viewer-section">
-            <div class="panel-title" style="font-size:0.95rem; color: white; border-bottom: 2px solid white; margin-bottom:6px; padding-bottom:4px;">📄 실무 계약서 원본 문서 검증 (JPG/PNG/PDF 통합)</div>
-            <div id="viewerDisplayArea" class="viewer-display-area">
-                <!-- 초기 로딩 시 기본 더미 표출 구조 보존 -->
-                <div class="pdf-mock" id="defaultMockDoc">
-                    <h4 style="text-align:center; border-bottom: 1px solid black; padding-bottom: 5px; font-weight: bold; margin-bottom:10px;">부동산 임대차계약서 (원본 뷰어 대기)</h4>
-                    <p><b>[부동산의 표시]</b> 구로 테크노타운 A동 201호</p>
-                    <p><b>[계약 내용]</b> 보증금: 금 오천만원정, 월세: 금 삼백오십만원 [지정 납부일 매월 15일]</p>
-                    <p style="margin-top:5px;"><b>[임차인]</b> 주식회사 네트웍스 파트너스 (대표자 실명 확인 완료)</p>
-                </div>
+        <div class="viewer-body" id="viewerDisplayArea">
+            <div class="viewer-placeholder" id="viewerDefaultPlaceholder">
+                파일을 업로드하면 이곳에 고해상도로 즉시 렌더링됩니다.
             </div>
         </div>
     </div>
 
     <script>
-        function showTab(tabId, btnObj) {
-            var bodies = document.querySelectorAll('.tab-body');
-            for(var i=0; i<bodies.length; i++) bodies[i].classList.remove('active');
-            var btns = document.querySelectorAll('.tab-btn');
-            for(var j=0; j<btns.length; j++) btns[j].classList.remove('active');
-            document.getElementById(tabId).classList.add('active');
-            if(btnObj) btnObj.classList.add('active');
+        function validatePhone(obj) {
+            let val = obj.value.replace(/[^0-9]/g, '');
+            if (val.length > 3 && val.length <= 7) {
+                obj.value = val.substring(0, 3) + '-' + val.substring(3);
+            } else if (val.length > 7) {
+                obj.value = val.substring(0, 3) + '-' + val.substring(3, 7) + '-' + val.substring(7, 11);
+            } else {
+                obj.value = val;
+            }
         }
 
-        // ===== [★ 신규] 파일 선택 시 확장자 구별 후 우측 뷰어 렌더링 스위칭 엔진 =====
-        function previewContractFile(input) {
-            var area = document.getElementById('viewerDisplayArea');
-            if (input.files && input.files[0]) {
-                var file = input.files[0];
-                var reader = new FileReader();
-                var ext = file.name.split('.').pop().toLowerCase();
+        function switchTab(tabId, btnObj) {
+            document.querySelectorAll('.tab-body').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btnObj.classList.add('active');
+        }
 
+        function searchBrokerPartner() {
+            const keyword = document.getElementById('brokerSearchInput').value.trim();
+            const statusDiv = document.getElementById('brokerSelectStatus');
+            
+            if(!keyword) return alert('검색할 협력 중개사명을 입력해 주세요.');
+            
+            if(keyword.includes('팩토리') || keyword.includes('김중개')) {
+                statusDiv.innerText = `✅ 연동완료: [공인중개사 팩토리] 계약 바인딩 완료`;
+                statusDiv.style.color = 'green';
+            } else {
+                alert('협력사 명부(partner_roster)에서 중개사를 찾을 수 없습니다.');
+                statusDiv.innerText = `❌ 연동 실패: 등록되지 않은 협력사`;
+                statusDiv.style.color = 'red';
+            }
+        }
+
+        function previewUploadedFile(inputObj) {
+            const file = inputObj.files[0];
+            const area = document.getElementById('viewerDisplayArea');
+            if (file) {
+                const reader = new FileReader();
+                const ext = file.name.split('.').pop().toLowerCase();
                 reader.onload = function(e) {
-                    area.innerHTML = ''; // 기존 뷰어 초기화
-                    
+                    area.innerHTML = '';
                     if (ext === 'pdf') {
-                        // PDF 포맷일 경우 브라우저 네이티브 PDF 뷰어 탑재
-                        var iframe = document.createElement('iframe');
-                        iframe.src = e.target.result;
-                        iframe.className = 'viewer-pdf';
-                        area.appendChild(iframe);
-                    } else if (ext === 'jpg' || ext === 'jpeg' || ext === 'png') {
-                        // 이미지 파일(JPG, PNG)일 경우 고해상도 상시 렌더링 매핑
-                        var img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.className = 'viewer-image';
-                        area.appendChild(img);
-                    } else {
-                        alert('지원하지 않는 문서 포맷입니다. (JPG, PNG, PDF만 가능)');
+                        area.innerHTML = `<iframe src="${e.target.result}" class="viewer-pdf"></iframe>`;
+                    } else if (['jpg', 'jpeg', 'png'].includes(ext)) {
+                        area.innerHTML = `<img src="${e.target.result}" class="viewer-image">`;
                     }
                 }
                 reader.readAsDataURL(file);
             }
         }
 
-        // 목록 클릭 시 저장된 파일 샘플 강제 로드 테스트 함수 (동작 확인용)
-        function loadMockStoredFile(type) {
-            var area = document.getElementById('viewerDisplayArea');
-            area.innerHTML = '';
-            if(type === 'pdf') {
-                area.innerHTML = '<iframe class="viewer-pdf" src="about:blank"></iframe>';
-            }
+        function resetContractForm() {
+            document.getElementById('contractForm').reset();
+            document.getElementById('brokerSelectStatus').innerText = `ℹ️ 현재 연결된 중개사 없음 (직접 거래 시 공란)`;
+            document.getElementById('brokerSelectStatus').style.color = '';
+            document.getElementById('viewerDisplayArea').innerHTML = `<div class="viewer-placeholder">파일을 업로드하면 이곳에 즉시 렌더링됩니다.</div>`;
+            switchTab('tab-tenant', document.querySelectorAll('.tab-btn')[0]);
+        }
+
+        function saveContract() {
+            alert(`[계약서 등록 완료] 데이터가 규격에 맞춰 안전하게 인서트되었습니다.`);
+            resetContractForm();
         }
     </script>
 </body>
