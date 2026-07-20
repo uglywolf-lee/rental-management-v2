@@ -4,46 +4,67 @@
     <meta charset="UTF-8">
     <title>팀원·권한 관리자 등록 (사무인력 전용)</title>
     <style>
-        :root { --primary: #0d6efd; --border: #dee2e6; --bg: #f8f9fa; }
-        body { font-family: 'Segoe UI', sans-serif; display: flex; height: calc(100vh - 64px); overflow: hidden; background-color: #f8f9fa; }
-        .left-panel { width: 35%; background: white; border-right: 1px solid var(--border); padding: 25px; overflow-y: auto; box-sizing: border-box; }
-        .right-panel { width: 65%; display: flex; flex-direction: column; box-sizing: border-box; }
+        :root { 
+            --primary: #0d6efd; 
+            --border: #dee2e6; 
+            --bg: #f8f9fa; 
+            --text-dark: #495057;
+            --text-muted: #6c757d;
+            --danger: #dc3545;
+            --success: #198754;
+            --warning: #ffc107;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif; 
+            display: flex; 
+            height: calc(100vh - 64px); 
+            overflow: hidden; 
+            background-color: var(--bg); 
+        }
+        .left-panel { width: 35%; background: white; border-right: 1px solid var(--border); padding: 25px; overflow-y: auto; }
+        .right-panel { width: 65%; display: flex; flex-direction: column; }
         .panel-title { font-size: 1.1rem; color: var(--primary); margin: 0 0 20px 0; border-bottom: 2px solid var(--primary); padding-bottom: 8px; font-weight: bold; }
         .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; color: #495057; }
+        .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; color: var(--text-dark); }
         .form-control { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.88rem; box-sizing: border-box; }
-        .btn-box { margin-top: 15px; display: flex; gap: 8px; }
+        .btn-box { margin-top: 15px; display: flex; flex-direction: column; gap: 8px; }
+        .btn-row { display: flex; gap: 8px; width: 100%; }
         .btn { flex: 1; padding: 10px; border: none; border-radius: 4px; font-size: 0.85rem; font-weight: bold; cursor: pointer; text-align: center; }
         .btn-main { background: var(--primary); color: white; }
-        .btn-sub { background: #6c757d; color: white; }
-        /* 탭 전환 */
+        .btn-warn { background: var(--warning); color: #212529; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-tab-search { flex: none; width: 80px; }
         .right-tabs { width: 100%; padding: 0 20px; background: #e9ecef; display: flex; gap: 4px; }
-        .right-tab { padding: 8px 16px; cursor: pointer; font-size: 0.85rem; font-weight: bold; color: #495057; border-radius: 4px 4px 0 0; user-select: none; }
-        .right-tab.active { background: white; color: var(--primary); border-bottom: 2px solid var(--primary); }
-        .tab-body { flex: 1; padding: 20px; overflow-y: auto; background: white; display: none; }
-        .tab-body.active { display: block; }
-        /* 알림박스 */
+        .right-tab { padding: 8px 16px; font-size: 0.85rem; font-weight: bold; color: var(--primary); background: white; border-radius: 4px 4px 0 0; border-bottom: 2px solid var(--primary); user-select: none; }
+        .tab-body { flex: 1; padding: 20px; overflow-y: auto; background: white; }
+        .tab-search-box { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 15px; }
         .alert-box { padding: 8px 12px; border-radius: 4px; margin-bottom: 15px; font-size: 0.78rem; line-height: 1.4; }
-        .alert-info { background: #cfe2ff; color: #084298; border-left: 3px solid #0d6efd; }
-        .alert-warn { background: #fff3cd; color: #664d03; border-left: 3px solid #ffc107; }
-        /* 엑셀 테이블 */
+        .alert-info { background: #cfe2ff; color: #084298; border-left: 3px solid var(--primary); }
+        .alert-warn { background: #fff3cd; color: #664d03; border-left: 3px solid var(--warning); }
         .excel-table-wrap { overflow: auto; border: 1px solid #bbc4cc; }
         table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
-        th { background: #f1f3f5; border: 1px solid #bbc4cc; padding: 6px 8px; font-weight: 600; position: sticky; top: 0; text-align: left; white-space: nowrap; }
-        td { border: 1px solid #ced4da; padding: 6px 8px; white-space: nowrap; color: #333; }
-        tr:nth-child(even) { background-color: #f8f9fa; }
+        th { background: #f1f3f5; border: 1px solid #bbc4cc; padding: 6px 8px; font-weight: 600; position: sticky; top: 0; text-align: center; white-space: nowrap; }
+        td { border: 1px solid #ced4da; padding: 4px 8px; white-space: nowrap; color: #333; }
+        tr:nth-child(even) { background-color: var(--bg); }
         tr:hover { background-color: #e2e6ea; cursor: pointer; }
+        .cell-text-center { text-align: center; } 
+        .cell-num-right { text-align: right; }    
+        .status-active { color: var(--success); font-weight: bold; }
+        .col-emp-id { min-width: 65px; max-width: 80px; width: 70px; text-align: right; }
+        .th-emp-id { min-width: 65px; max-width: 80px; width: 70px; text-align: center; }
     </style>
 </head>
 <body>
+
     <div class="left-panel">
         <div class="panel-title">👤 J. 팀원등록/권한관리</div>
         <form onsubmit="event.preventDefault();">
-            <div class="alert-box alert-info">💡 보안: 비밀번호는 암호화해시 저장. 신규가입은 SUPER_admin 승인필수.</div>
+            <div class="alert-box alert-info">💡 보안: 비밀번호는 암호화해시 저장. 신규가입은 최상위관리자 승인필수.</div>
 
             <div class="form-group">
                 <label>사번 (고용번호)</label>
-                <input type="text" class="form-control" placeholder="예: EMP-001 (고유식별번호)" required>
+                <input type="text" class="form-control" placeholder="예: 001 (고유식별번호)" required>
             </div>
             <div class="form-group">
                 <label>실제 성명</label>
@@ -66,63 +87,52 @@
                 </select>
             </div>
 
-            <div class="alert-box alert-warn">⚠️ 최고관리자(super_admin)는 상단 식별 아이디 조회 후 비밀번호를 직접 강제 변경할 수 있습니다.</div>
-<div class="btn-box">
-                <button type="submit" class="btn btn-main">조직원 등록 / 직무 저장</button>
-                <button type="button" class="btn btn-sub" style="background: #dc3545;">🔑 최고관리자: 비밀번호 강제 변경</button>
+            <div class="alert-box alert-warn">⚠️ 최상위관리자(super_admin)는 상단 식별 아이디 조회 후 비밀번호를 직접 강제 변경할 수 있습니다.</div>
+            
+            <div class="btn-box">
+                <div class="btn-row">
+                    <button type="submit" class="btn btn-main">조직원 등록 / 직무 저장</button>
+                    <button type="button" class="btn btn-danger" onclick="suspendDuty()">🚫 최고관리자: 해당 직무 정지</button>
+                </div>
+                <button type="button" class="btn btn-warn">🔑 최고관리자: 비밀번호 강제 변경</button>
             </div>
         </form>
     </div>
 
-    <!-- 우측 탭 패널 -->
     <div class="right-panel">
         <div class="right-tabs">
-            <div class="right-tab active" onclick="showTab('tab-people')">팀원명부현황</div>
-            <div class="right-tab" onclick="showTab('tab-audit')">감사로그조회 (누가·언제·무엇을)</div>
+            <div class="right-tab">팀원명부현황</div>
         </div>
 
-        <!-- 팀원명부현황 탭 -->
-        <div id="tab-people" class="tab-body active">
-            <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 15px;">
+        <div class="tab-body">
+            <div class="tab-search-box">
                 <input type="text" class="form-control" placeholder="성명 또는 계정명으로 시트검색...">
-                <button class="btn btn-main" style="flex:none; width:80px;">현황조회</button>
+                <button class="btn btn-main btn-tab-search">현황조회</button>
             </div>
             <div class="excel-table-wrap">
                 <table>
                     <thead>
                         <tr>
-                            <th>사원ID(고용번호)</th><th>직책명</th><th>실명</th><th>역할종류</th><th>등록시점(요일)</th><th>사용상태</th>
+                            <th class="th-emp-id">사원번호</th>
+                            <th>직책명</th><th>실명</th><th>역할종류</th><th>등록시점(요일)</th><th>사용상태</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>1</td><td>superadmin01</td><td>김자산</td><td>최상위권한자</td><td>2023-01-01 (수)</td><td style="color:green;">활성화됨</td>
+                            <td class="col-emp-id">1</td>
+                            <td class="cell-text-center">최상위관리자</td>
+                            <td class="cell-text-center">김자산</td>
+                            <td class="cell-text-center">최상위권한자</td>
+                            <td class="cell-num-right">2023-01-01 (수)</td>
+                            <td class="cell-text-center"><span class="status-active">활성화됨</span></td>
                         </tr>
                         <tr>
-                            <td>99</td><td>office01</td><td>홍길동</td><td>사무인력 / 계약조회가능</td><td>2025-06-15 (일)</td><td style="color:green;">활성화됨</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- 감사로그조회 탭 -->
-        <div id="tab-audit" class="tab-body">
-            <div style="display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-bottom: 15px;">
-                <input type="text" class="form-control" placeholder="누가·어떤테이블에서·무슨작업했는지검색...">
-                <button class="btn btn-main" style="flex:none; width:80px;">감사로그조회</button>
-            </div>
-            <div class="excel-table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>No.</th><th>작업자고유번호</th><th>대상테이블명</th><th>작업종류</th>
-<th>상세기록_JSON파일명</th><th>이행시점(요일)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>4402</td><td>User-11</td><td>계약서등록</td><td>삽입작업</td><td>log_2026_07_full.json.gz</td><td>2026-07-19 (일)</td>
+                            <td class="col-emp-id">99</td>
+                            <td class="cell-text-center">사무원</td>
+                            <td class="cell-text-center">홍길동</td>
+                            <td class="cell-text-center">사무인력 / 계약조회가능</td>
+                            <td class="cell-num-right">2025-06-15 (일)</td>
+                            <td class="cell-text-center"><span class="status-active">활성화됨</span></td>
                         </tr>
                     </tbody>
                 </table>
@@ -130,13 +140,10 @@
         </div>
     </div>
 
-    <script>
-function showTab(tabId) {
-    document.querySelectorAll('.tab-body').forEach(function(el) { el.classList.remove('active'); });
-    document.querySelectorAll('.right-tab').forEach(function(el) { el.classList.remove('active'); });
-    document.getElementById(tabId).classList.add('active');
-    event.target.classList.add('active');
+<script>
+function suspendDuty() {
+    alert("⚠️ [직무 정지 발동]\n\n해당 계정 사원의 시스템 접근 및 업무 인가 권한을 즉시 정지(is_active=0) 처리합니다.");
 }
-    </script>
+</script>
 </body>
 </html>
