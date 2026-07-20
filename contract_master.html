@@ -17,14 +17,20 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', sans-serif; display: flex; height: 100vh; overflow: hidden; background-color: var(--bg); }
+        
+        /* 💡 폰트 통일화: 전역 및 모든 폼 컨트롤 엘리먼트에 동일 폰트 강제 적용 */
+        body, input, select, textarea, button { 
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif; 
+        }
+        
+        body { display: flex; height: 100vh; overflow: hidden; background-color: var(--bg); }
 
         /* ─── 레이아웃 패널 격리 ─── */
         .left-form-panel { 
             width: 35%; 
             background: white; 
             border-right: 1px solid var(--border); 
-            padding: 12px 16px; 
+            padding: 16px; 
             overflow-y: auto; 
             scrollbar-width: thin; 
         }
@@ -36,13 +42,13 @@
             background: #fff; 
         }
 
-        .section-sep { border: 0; border-top: 1px dashed var(--border); margin: 12px 0; }
+        .section-sep { border: 0; border-top: 1px dashed var(--border); margin: 14px 0; }
 
         /* ─── 패널 제목 ─── */
         .panel-title { 
             font-size: 0.95rem; 
             color: var(--primary); 
-            margin: 14px 0 6px; 
+            margin: 14px 0 8px; 
             padding-bottom: 5px; 
             border-bottom: 2px solid var(--primary); 
             font-weight: bold; 
@@ -57,44 +63,55 @@
             font-weight: normal;
         }
 
-        /* ─── 1열에 2개씩 가로 배치하는 그리드 구조 ─── */
+        /* ─── 💡 좌측 메뉴 2열 그리드 배치 구조 안정화 ─── */
         .grid-2col {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 8px;
+            gap: 12px;
+            margin-bottom: 10px;
+            align-items: flex-start;
         }
 
-        /* ─── 개별 폼 컨트롤 ─── */
+        /* 개별 폼 컨트롤 구조 정돈 */
         .form-group { 
             display: flex; 
             flex-direction: column;
-            gap: 4px;
+            gap: 5px;
+        }
+        .form-group>label { 
+            font-size: 0.78rem; 
+            font-weight: 600; 
+            color: var(--text-dark); 
         }
         .form-control { 
             width: 100%; 
-            padding: 6px 8px; 
+            padding: 7px 10px; 
             border: 1px solid var(--border); 
             border-radius: 4px; 
             font-size: 0.82rem; 
             box-sizing: border-box; 
+            line-height: 1.4;
+        }
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
         }
 
         .flex-box { display: flex; gap: 4px; width: 100%; }
 
         /* ─── 버튼 디자인 제어 (저장 크게, 초기화 작게) ─── */
-        .btn-box { margin-top: 15px; display: flex; gap: 6px; align-items: center; }
+        .btn-box { margin-top: 18px; display: flex; gap: 6px; align-items: center; }
         .btn { padding: 10px 12px; border: none; border-radius: 4px; font-size: 0.85rem; font-weight: bold; cursor: pointer; text-align: center; }
         .btn-main   { background: var(--primary); color: white; flex: 3; }
         .btn-sub    { background: var(--text-muted); color: white; flex: 1; font-size: 0.8rem; padding: 10px 6px; }
-        .btn-sec    { background: var(--secondary); color: white; padding: 4px 10px; font-size: 0.75rem; white-space: nowrap; }
+        .btn-sec    { background: var(--secondary); color: white; padding: 4px 10px; font-size: 0.75rem; white-space: nowrap; border-radius: 4px; }
 
         /* ─── 문서 업로드 카드 ─── */
-        .doc-card { border: 1px solid var(--border); border-radius: 4px; padding: 8px; background: var(--bg); }
+        .doc-card { border: 1px solid var(--border); border-radius: 4px; padding: 10px; background: var(--bg); }
         .doc-card-title { font-weight: 600; font-size: 0.8rem; color: #333; margin-bottom: 6px; }
 
-        /* ─── 우측 패널 3단 수직 구조 스타일 ─── */
-        /* [1단] 우측 패널 맨 위의 3줄 공간 특약사항 프레임 */
+        /* ─── 우측 패널 수직 구조 세부 스타일 ─── */
+        /* [1단] 우측 패널 최상단 특약사항 구역 */
         .viewer-top-special-frame {
             padding: 12px 14px;
             background: #fff;
@@ -106,18 +123,18 @@
         .viewer-memo-label { font-size: 0.85rem; font-weight: bold; color: var(--primary); }
         textarea.viewer-memo-textarea { 
             width: 100%; 
-            height: 4.5rem; /* 약 3줄 정도의 공간 확보 */
+            height: 4.5rem; 
             padding: 8px 12px; 
             border: 1px solid var(--border); 
             border-radius: 4px; 
             font-size: 0.85rem; 
             outline: none; 
             resize: none;
-            font-family: inherit;
+            line-height: 1.5;
         }
         textarea.viewer-memo-textarea:focus { border-color: var(--primary); }
 
-        /* [2단] 특약사항 아래, 뷰어 바로 위에 붙는 사본확인 제목 헤더 바 */
+        /* [2단] 특약사항 바로 밑 '사본확인' 헤더 바 */
         .viewer-header-mid { 
             background: #f1f3f5; 
             padding: 8px 14px; 
@@ -129,7 +146,7 @@
         .viewer-header-mid h3 { font-size: 0.85rem; margin: 0; color: #333; }
         .viewer-badge  { font-size: 0.72rem; padding: 2px 8px; border-radius: 3px; background: #e9ecef; color: #495057; }
         
-        /* [3단] 최하단 계약서 사본 전용 대형 뷰어 몸통 */
+        /* [3단] 최하단 계약서 원본 사본 전용 대형 뷰어 */
         .viewer-body-bottom { flex: 1; background: #525659; display: flex; justify-content: center; align-items: center; overflow: auto; position: relative; }
         .placeholder    { color: #aaa; font-size: 0.82rem; text-align: center; line-height: 1.6; }
         .viewer-img     { max-width: 100%; max-height: 100%; object-fit: contain; }
@@ -138,11 +155,11 @@
 </head>
 <body>
 
-    <!-- ─── 좌측 입력 폼 패널 (기존 정답 구조 유지) ─── -->
+    <!-- ─── 좌측 입력 폼 패널 (2열 가로 정렬 교정) ─── -->
     <div class="left-form-panel">
         <form id="contractForm" onsubmit="event.preventDefault();">
             
-            <!-- 계약 내용 구역 (1열 2개씩 가로 배치 구조) -->
+            <!-- 상세 계약 내용 (1열 2개 그리드 구조 완벽 정돈) -->
             <div class="panel-title">💰 상세 계약 내용</div>
             
             <div class="grid-2col">
@@ -184,7 +201,7 @@
             
             <hr class="section-sep" />
             
-            <!-- 계약 상대방 정보 구역 (이름/연락처 중심 1열 2개 구조) -->
+            <!-- 계약 상대방 정보 구역 (1열 2개 구조 가로 정렬 매칭) -->
             <div class="panel-title">👤 계약 상대방 정보</div>
             
             <div class="grid-2col">
@@ -211,7 +228,7 @@
 
             <hr class="section-sep">
             
-            <!-- 중개사 명부 연동 구역 (1열 2개 구조) -->
+            <!-- 중개사 명부 연동 구역 (1열 2개 구조 높이 밸런스 패딩 조정) -->
             <div class="panel-title">
                 🤝 중개사 검색 및 정산 
                 <span class="panel-title-sub">(공란 가능)</span>
@@ -233,7 +250,7 @@
 
             <hr class="section-sep">
             
-            <!-- 증빙 서류 업로드 (반 잘라서 가로 1열 구조) -->
+            <!-- 증빙 서류 업로드 (반 잘라서 가로 1열 정렬 구조) -->
             <div class="panel-title">📄 증빙 서류 마스터 통합 업로드</div>
             <div class="grid-2col">
                 <div class="doc-card">
@@ -253,17 +270,16 @@
         </form>
     </div>
 
-    <!-- ─── 우측 패널 (세로 3단 프레임 구조) ─── -->
+    <!-- ─── 우측 패널 (세로 3단 프레임 레이아웃 완벽 유지) ─── -->
     <div class="right-viewer-panel">
         
-        <!-- [1단] 우측 가장 위에 독립 배치된 특약사항 메모 공간[span_1](start_span)[span_1](end_span) -->
+        <!-- [1단] 우측 패널 가장 위 특약사항 메모 공간[span_1](start_span)[span_1](end_span) -->
         <div class="viewer-top-special-frame">
             <span class="viewer-memo-label">✍️ 특약사항</span>
-            <!-- 플레이스홀더 문구 교정 ("3줄 규격" 단어 삭제) -->
             <textarea id="f_specialTerms" class="viewer-memo-textarea" placeholder="계약 관련 특약 사항 내용을 입력하세요."></textarea>
         </div>
 
-        <!-- [2단] 특약 아래이자 뷰어 바로 위에 붙는 사본확인 제목 헤더 바[span_2](start_span)[span_2](end_span) -->
+        <!-- [2단] 특약 아래이자 뷰어 바로 위에 붙는 사본확인 타이틀 바[span_2](start_span)[span_2](end_span) -->
         <div class="viewer-header-mid">
             <h3>📄 사본확인</h3>
             <span class="viewer-badge" id="vBadge">미선택 상태</span>
