@@ -23,7 +23,7 @@
 
     if (!sessionStorage.getItem('loginOk')) {
       var cur = location.pathname.split('/').pop();
-      if (cur && cur !== 'index.html') {
+      if (cur && cur !== 'main.html' && cur !== 'index.html') {
         sessionStorage.setItem('redirectAfterLogin', location.href);
         sessionStorage.clear();
         location.href = 'index.html';
