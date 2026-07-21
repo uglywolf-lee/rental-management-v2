@@ -23,10 +23,10 @@
 
     if (!sessionStorage.getItem('loginOk')) {
       var cur = location.pathname.split('/').pop();
-      if (cur && cur !== 'login.html') {
+      if (cur && cur !== 'index.html') {
         sessionStorage.setItem('redirectAfterLogin', location.href);
         sessionStorage.clear();
-        location.href = 'login.html';
+        location.href = 'index.html';
         return false;
       }
     } else {
@@ -46,7 +46,7 @@
 
   window.logout = function () {
     sessionStorage.clear();
-    location.href = 'login.html';
+    location.href = 'index.html';
   };
 
   function getButtonsByRole (userRole) {
