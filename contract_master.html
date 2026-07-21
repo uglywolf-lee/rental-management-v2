@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>계약서 관리 시스템 (임대인 전용)</title>
     <style>
-        /* ─── R25: 디자인 토큰 변수 지정 및 인라인 스타일 전면 배제 ─── */
         :root { 
             --primary: #fd7e14; 
             --secondary: #17a2b8; 
@@ -14,21 +13,20 @@
             --text-muted: #6c757d;
             --success: #28a745;
             --danger: #dc3545;
+            --white: #ffffff;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        /* 💡 폰트 통일화: 전역 및 모든 폼 컨트롤 엘리먼트에 동일 폰트 강제 적용 */
         body, input, select, textarea, button { 
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif; 
         }
         
         body { display: flex; height: 100vh; overflow: hidden; background-color: var(--bg); }
 
-        /* ─── 레이아웃 패널 격리 ─── */
         .left-form-panel { 
             width: 35%; 
-            background: white; 
+            background: var(--white); 
             border-right: 1px solid var(--border); 
             padding: 16px; 
             overflow-y: auto; 
@@ -39,12 +37,11 @@
             display: flex; 
             flex-direction: column; 
             height: 100%; 
-            background: #fff; 
+            background: var(--white); 
         }
 
         .section-sep { border: 0; border-top: 1px dashed var(--border); margin: 14px 0; }
 
-        /* ─── 패널 제목 ─── */
         .panel-title { 
             font-size: 0.95rem; 
             color: var(--primary); 
@@ -63,7 +60,6 @@
             font-weight: normal;
         }
 
-        /* ─── 💡 좌측 메뉴 2열 그리드 배치 구조 안정화 ─── */
         .grid-2col {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -72,7 +68,6 @@
             align-items: flex-start;
         }
 
-        /* 개별 폼 컨트롤 구조 정돈 */
         .form-group { 
             display: flex; 
             flex-direction: column;
@@ -99,22 +94,18 @@
 
         .flex-box { display: flex; gap: 4px; width: 100%; }
 
-        /* ─── 버튼 디자인 제어 (저장 크게, 초기화 작게) ─── */
         .btn-box { margin-top: 18px; display: flex; gap: 6px; align-items: center; }
         .btn { padding: 10px 12px; border: none; border-radius: 4px; font-size: 0.85rem; font-weight: bold; cursor: pointer; text-align: center; }
-        .btn-main   { background: var(--primary); color: white; flex: 3; }
-        .btn-sub    { background: var(--text-muted); color: white; flex: 1; font-size: 0.8rem; padding: 10px 6px; }
-        .btn-sec    { background: var(--secondary); color: white; padding: 4px 10px; font-size: 0.75rem; white-space: nowrap; border-radius: 4px; }
+        .btn-main   { background: var(--primary); color: var(--white); flex: 3; }
+        .btn-sub    { background: var(--text-muted); color: var(--white); flex: 1; font-size: 0.8rem; padding: 10px 6px; }
+        .btn-sec    { background: var(--secondary); color: var(--white); padding: 4px 10px; font-size: 0.75rem; white-space: nowrap; border-radius: 4px; }
 
-        /* ─── 문서 업로드 카드 ─── */
         .doc-card { border: 1px solid var(--border); border-radius: 4px; padding: 10px; background: var(--bg); }
         .doc-card-title { font-weight: 600; font-size: 0.8rem; color: #333; margin-bottom: 6px; }
 
-        /* ─── 우측 패널 수직 구조 세부 스타일 ─── */
-        /* [1단] 우측 패널 최상단 특약사항 구역 */
         .viewer-top-special-frame {
             padding: 12px 14px;
-            background: #fff;
+            background: var(--white);
             border-bottom: 1px solid var(--border);
             display: flex;
             flex-direction: column;
@@ -134,7 +125,6 @@
         }
         textarea.viewer-memo-textarea:focus { border-color: var(--primary); }
 
-        /* [2단] 특약사항 바로 밑 '사본확인' 헤더 바 */
         .viewer-header-mid { 
             background: #f1f3f5; 
             padding: 8px 14px; 
@@ -146,7 +136,6 @@
         .viewer-header-mid h3 { font-size: 0.85rem; margin: 0; color: #333; }
         .viewer-badge  { font-size: 0.72rem; padding: 2px 8px; border-radius: 3px; background: #e9ecef; color: #495057; }
         
-        /* [3단] 최하단 계약서 원본 사본 전용 대형 뷰어 */
         .viewer-body-bottom { flex: 1; background: #525659; display: flex; justify-content: center; align-items: center; overflow: auto; position: relative; }
         .placeholder    { color: #aaa; font-size: 0.82rem; text-align: center; line-height: 1.6; }
         .viewer-img     { max-width: 100%; max-height: 100%; object-fit: contain; }
@@ -155,11 +144,9 @@
 </head>
 <body>
 
-    <!-- ─── 좌측 입력 폼 패널 (2열 가로 정렬 교정) ─── -->
     <div class="left-form-panel">
         <form id="contractForm" onsubmit="event.preventDefault();">
             
-            <!-- 상세 계약 내용 (1열 2개 그리드 구조 완벽 정돈) -->
             <div class="panel-title">💰 상세 계약 내용</div>
             
             <div class="grid-2col">
@@ -190,9 +177,16 @@
 
             <div class="grid-2col">
                 <div class="form-group">
+                    <label>관리비 금액 (원)</label>
+                    <input type="number" id="f_maintenanceFee" class="form-control" value="0" min="0">
+                </div>
+                <div class="form-group">
                     <label>계약 시작일</label>
                     <input type="date" id="f_startDate" class="form-control" required />
                 </div>
+            </div>
+
+            <div class="grid-2col">
                 <div class="form-group">
                     <label>계약 종료일</label>
                     <input type="date" id="f_endDate" class="form-control" required />
@@ -201,7 +195,6 @@
             
             <hr class="section-sep" />
             
-            <!-- 계약 상대방 정보 구역 (1열 2개 구조 가로 정렬 매칭) -->
             <div class="panel-title">👤 계약 상대방 정보</div>
             
             <div class="grid-2col">
@@ -228,7 +221,6 @@
 
             <hr class="section-sep">
             
-            <!-- 중개사 명부 연동 구역 (1열 2개 구조 높이 밸런스 패딩 조정) -->
             <div class="panel-title">
                 🤝 중개사 검색 및 정산 
                 <span class="panel-title-sub">(공란 가능)</span>
@@ -250,7 +242,6 @@
 
             <hr class="section-sep">
             
-            <!-- 증빙 서류 업로드 (반 잘라서 가로 1열 정렬 구조) -->
             <div class="panel-title">📄 증빙 서류 마스터 통합 업로드</div>
             <div class="grid-2col">
                 <div class="doc-card">
@@ -270,22 +261,18 @@
         </form>
     </div>
 
-    <!-- ─── 우측 패널 (세로 3단 프레임 레이아웃 완벽 유지) ─── -->
     <div class="right-viewer-panel">
         
-        <!-- [1단] 우측 패널 가장 위 특약사항 메모 공간[span_1](start_span)[span_1](end_span) -->
         <div class="viewer-top-special-frame">
             <span class="viewer-memo-label">✍️ 특약사항</span>
             <textarea id="f_specialTerms" class="viewer-memo-textarea" placeholder="계약 관련 특약 사항 내용을 입력하세요."></textarea>
         </div>
 
-        <!-- [2단] 특약 아래이자 뷰어 바로 위에 붙는 사본확인 타이틀 바[span_2](start_span)[span_2](end_span) -->
         <div class="viewer-header-mid">
             <h3>📄 사본확인</h3>
             <span class="viewer-badge" id="vBadge">미선택 상태</span>
         </div>
         
-        <!-- [3단] 사본확인 제목 아래의 계약서 사본 뷰어 몸통[span_3](start_span)[span_3](end_span) -->
         <div class="viewer-body-bottom" id="viewerArea">
             <div class="placeholder" id="viewerPh">신분증 사본 혹은 임대차 계약서 파일을 왼쪽에서 첨부하면<br>고해상도 실시간 렌더링 검침이 통합 시작됩니다.</div>
         </div>
@@ -384,6 +371,7 @@ function collectForm(){
         lease_type: document.getElementById('f_leaseType').value,
         deposit_amount: parseInt(document.getElementById('f_deposit').value) || 0,
         monthly_rent: parseInt(document.getElementById('f_monthlyRent').value) || 0,
+        maintenance_fee: parseInt(document.getElementById('f_maintenanceFee').value) || 0,
         commission_fee: parseInt(document.getElementById('f_commissionFee').value) || 0,
         start_date: document.getElementById('f_startDate').value,
         end_date: document.getElementById('f_endDate').value,
@@ -410,7 +398,7 @@ function saveContract(){
     console.log('[R7/R18 감사로그 추적 기록 시스템 실행 - audit_logs]');
     console.log('상세로그내역JSON: ', JSON.stringify(d));
 
-    alert('✅ 계약서 마스터 인서트 성공!\n\n임차인명: ' + document.getElementById('f_tenantName').value + '\n구분: ' + d.lease_type + '\n보증금: ' + d.deposit_amount.toLocaleString() + '원\n월세료: ' + d.monthly_rent.toLocaleString() + '원');
+    alert('✅ 계약서 마스터 인서트 성공!\n\n임차인명: ' + document.getElementById('f_tenantName').value + '\n구분: ' + d.lease_type + '\n보증금: ' + d.deposit_amount.toLocaleString() + '원\n월세료: ' + d.monthly_rent.toLocaleString() + '원\n관리비: ' + d.maintenance_fee.toLocaleString() + '원');
 }
 
 function resetAll(){
